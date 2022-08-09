@@ -17,3 +17,4 @@ if __name__ == '__main__':
     configurar_log()
     logging.info(f'Iniciando processamento comprovantes bancarios: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}')
     iniciar_processamento()
+    logging.info(f'Processamento comprovantes finalizado: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}')
