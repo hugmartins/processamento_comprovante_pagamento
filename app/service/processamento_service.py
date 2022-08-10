@@ -2,7 +2,7 @@ import csv
 from decimal import Decimal
 from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
                                         carregar_endereco_arquivo_liquido_folha
-from app.dto.models import Funcionario, Filial
+from app.dto.models import Funcionario
 
 
 MAP_LIQUIDO_FOLHA = {}
@@ -22,6 +22,7 @@ def buscar_comprovante_por_funcionario(arq_liquido_folha: str):
         next(dados_liquido_folha, None)
         for linha in dados_liquido_folha:
             funcionario = Funcionario(
+                descricao_filial=linha[0],
                 nome_completo=linha[1],
                 id_funcionario=linha[2],
                 cpf=linha[3],
@@ -31,13 +32,23 @@ def buscar_comprovante_por_funcionario(arq_liquido_folha: str):
                 src_total_verba=Decimal(linha[7].replace(".", "").replace(",", "."))
             )
 
-            filial = Filial(descricao_filial=linha[0])
-            filial.funcionarios.append(funcionario)
-
-            print(filial.descricao_filial)
-            print(filial.funcionarios[0].nome_completo)
-            print(filial.funcionarios[0].src_total_verba)
+            adicionar_funcionario_map_liquido_folha(funcionario)
             break
+
+
+def adicionar_funcionario_map_liquido_folha(funcionario: Funcionario):
+    codigo_filial = funcionario.descricao_filial.split("-")[0]
+
+    if codigo_filial in MAP_LIQUIDO_FOLHA:
+        lista_funcionarios_filial = MAP_LIQUIDO_FOLHA[codigo_filial]
+        lista_funcionarios_filial.append(funcionario)
+        MAP_LIQUIDO_FOLHA[codigo_filial] = lista_funcionarios_filial
+    else:
+        MAP_LIQUIDO_FOLHA[codigo_filial] = [funcionario]
+
+    print(MAP_LIQUIDO_FOLHA[codigo_filial])
+    print(MAP_LIQUIDO_FOLHA[codigo_filial][0].nome_completo)
+    print(MAP_LIQUIDO_FOLHA[codigo_filial][0].src_total_verba)
 
 
 def validar_arquivos_existentes():
