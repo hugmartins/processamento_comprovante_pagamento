@@ -1,7 +1,18 @@
 from pydantic import BaseModel, Field, ValidationError, validator
 from typing import Optional
 from decimal import Decimal
+from enum import Enum
 from app.utils.utils import formatar_data_str
+
+
+class TipoRegistro(Enum):
+    ZERO = 0, "Header de Arquivo"
+    UM = 1, "Header de Lote"
+    DOIS = 2, "Registros Iniciais do Lote"
+    TRES = 3, "Detalhe"
+    QUATRO = 4, "Registros Finais do Lote"
+    CINCO = 5, "Trailer de Lote"
+    NOVE = 9, "Trailer de Arquivo"
 
 
 class Funcionario(BaseModel):
@@ -24,6 +35,7 @@ class HeaderArquivo(BaseModel):
     codigo_remessa_retorno: int = Field(description="Aceito apenas numero 2, quie significa arquivo retorno")
     data_geracao_arquivo_str: str
     hora_geracao_arquivo_str: str
+    tipo_registro: int
 
     @validator('codigo_remessa_retorno')
     def validar_codigo_remessa_retorno(cls, v):
@@ -36,5 +48,16 @@ class HeaderArquivo(BaseModel):
         return formatar_data_str(v, '%d%m%Y', '%d/%m/%Y')
 
 
+class Detalhe():
+    tipo_registro: int
+    codigo_segmento: str
+
+
+class TrailerArquivo(BaseModel):
+    quantidade_registro: int
+    tipo_registro: int
+
+
 class ArquivoRetorno(BaseModel):
     header: HeaderArquivo
+    trailer_arquivo: TrailerArquivo
