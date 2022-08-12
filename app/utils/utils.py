@@ -20,3 +20,10 @@ def formatar_data(data: datetime, formato: str = '%d_%m_%Y') -> str:
 def formatar_data_str(data_str: str, formato_entrada: str, formato_saida: str = '%d_%m_%Y') -> str:
     data = converter_string_data(data_str, formato_entrada)
     return data.strftime(formato_saida)
+
+
+def formatar_valor_pagamento(valor_pagamento: str) -> str:
+    return ''.join((valor_pagamento[:13], '.', valor_pagamento[13:]))
+
+
+print(formatar_valor_pagamento('000000001688456'))
