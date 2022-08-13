@@ -88,8 +88,8 @@ class SegmentoB(BaseModel):
 
 
 class DetalheArquivo(BaseModel):
-    segmento_a: SegmentoA
-    segmento_b: SegmentoB
+    segmento_a: Optional[SegmentoA] = None
+    segmento_b: Optional[SegmentoB] = None
 
 
 class TrailerLote(BaseModel):
