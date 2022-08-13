@@ -74,11 +74,11 @@ class SegmentoA(BaseModel):
 
     @validator('valor_pagamento_str')
     def formatar_valor_pagamento(cls, v):
-        return formatar_valor_pagamento(v)
+        return formatar_valor_pagamento(v, 13, 2)
 
     @validator('valor_real_efetivacao_pagamento_str')
     def formatar_valor_real_pagamento(cls, v):
-        return formatar_valor_pagamento(v)
+        return formatar_valor_pagamento(v, 13, 2)
 
 
 class SegmentoB(BaseModel):
@@ -99,7 +99,7 @@ class TrailerLote(BaseModel):
 
     @validator('total_pago_lote')
     def formatar_valor_total_pago_lote(cls, v):
-        return formatar_valor_pagamento(v)
+        return formatar_valor_pagamento(v, 16, 2)
 
 
 class TrailerArquivo(BaseModel):

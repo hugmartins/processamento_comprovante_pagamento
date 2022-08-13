@@ -22,5 +22,5 @@ def formatar_data_str(data_str: str, formato_entrada: str, formato_saida: str = 
     return data.strftime(formato_saida)
 
 
-def formatar_valor_pagamento(valor_pagamento: str) -> str:
-    return ''.join((valor_pagamento[:13], '.', valor_pagamento[-2:]))
+def formatar_valor_pagamento(valor_pagamento: str, quantidade_numeros_inteiros: int, casas_decimais: int = 2) -> str:
+    return ''.join((valor_pagamento[:quantidade_numeros_inteiros], '.', valor_pagamento[-casas_decimais:]))

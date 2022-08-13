@@ -95,13 +95,16 @@ def carregar_retornos_bancario() -> List[ArquivoRetorno]:
 
 def gerar_arquivo_retorno(dados_retorno_bancario: List[str]) -> ArquivoRetorno:
     lista_detalhes = []
+    header_arquivo = None
+    trailer_lote = None
+    trailer_arquivo = None
 
     for registro in dados_retorno_bancario:
         # print(registro)
         tipo_registro = int(registro[7:8])
 
         if tipo_registro == TipoRegistro.HEADER_ARQUIVO.value[0]:
-            header_arqui = gerar_header_arquivo(registro)
+            header_arquivo = gerar_header_arquivo(registro)
         elif tipo_registro == TipoRegistro.DETALHE.value[0] and registro[13:14] == "A":
 
             segmento_a = gerar_segmento_a(registro)
@@ -118,7 +121,7 @@ def gerar_arquivo_retorno(dados_retorno_bancario: List[str]) -> ArquivoRetorno:
             trailer_arquivo = gerar_trailer_arquivo(registro)
 
     return ArquivoRetorno(
-        header_arquivo=header_arqui,
+        header_arquivo=header_arquivo,
         lote=Lote(detalhe=lista_detalhes, trailer_lote=trailer_lote),
         trailer_arquivo=trailer_arquivo
 
@@ -127,60 +130,60 @@ def gerar_arquivo_retorno(dados_retorno_bancario: List[str]) -> ArquivoRetorno:
 
 def gerar_header_arquivo(registro: str) -> HeaderArquivo:
     return HeaderArquivo(
-        banco="",
-        lote=0,
-        tipo_registro=0,
-        numero_inscricao_empresa="",
-        nome_empresa="",
-        codigo_remessa_retorno=2,
-        data_geracao_arquivo_str="12082022",
-        hora_geracao_arquivo_str=""
+        banco=registro[0:3],
+        lote=int(registro[3:7]),
+        tipo_registro=int(registro[7:8]),
+        numero_inscricao_empresa=registro[18:32],
+        nome_empresa=registro[72:102],
+        codigo_remessa_retorno=int(registro[142:143]),
+        data_geracao_arquivo_str=registro[143:151],
+        hora_geracao_arquivo_str=registro[151:157]
 
     )
 
 
 def gerar_trailer_arquivo(registro: str) -> TrailerArquivo:
     return TrailerArquivo(
-        quantidade_registro=0,
-        tipo_registro=0
+        quantidade_registro=int(registro[23:29]),
+        tipo_registro=int(registro[7:8])
 
     )
 
 
 def gerar_segmento_a(registro: str) -> SegmentoA:
     return SegmentoA(
-        tipo_registro=0,
-        codigo_segmento="",
-        codigo_banco_favorecido="",
-        agencia="",
-        digito_verificador_agencia="",
-        numero_conta="",
-        digito_verificador_conta="",
-        digito_verificador_ag_conta="",
-        nome_favorecido="",
-        numero_documento="",
-        data_pagamento_str="12082022",
-        valor_pagamento_str="000000000207777",
-        nosso_numero="",
-        data_real_efetivacao_pagamento_str="12082022",
-        valor_real_efetivacao_pagamento_str="000000000207777"
+        tipo_registro=int(registro[7:8]),
+        codigo_segmento=registro[13:14],
+        codigo_banco_favorecido=registro[20:23],
+        agencia=registro[23:28],
+        digito_verificador_agencia=registro[28:29],
+        numero_conta=registro[29:41],
+        digito_verificador_conta=registro[41:42],
+        digito_verificador_ag_conta=registro[42:43],
+        nome_favorecido=registro[43:73],
+        numero_documento=registro[73:93],
+        data_pagamento_str=registro[93:101],
+        valor_pagamento_str=registro[119:134],
+        nosso_numero=registro[134:154],
+        data_real_efetivacao_pagamento_str=registro[154:162],
+        valor_real_efetivacao_pagamento_str=registro[162:177]
 
     )
 
 
 def gerar_segmento_b(registro: str) -> SegmentoB:
     return SegmentoB(
-        tipo_registro=0,
-        codigo_segmento="",
-        numero_inscricao_favorecido=""
+        tipo_registro=int(registro[7:8]),
+        codigo_segmento=registro[13:14],
+        numero_inscricao_favorecido=registro[18:32]
 
     )
 
 
 def gerar_trailer_lote(registro: str) -> TrailerLote:
     return TrailerLote(
-        quantidade_registro=0,
-        tipo_registro=0,
-        total_pago_lote=""
+        quantidade_registro=int(registro[17:23]),
+        tipo_registro=int(registro[7:8]),
+        total_pago_lote=registro[23:41]
 
     )
