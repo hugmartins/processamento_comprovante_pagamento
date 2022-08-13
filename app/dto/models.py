@@ -1,18 +1,18 @@
 from pydantic import BaseModel, Field, validator
-from typing import Optional
+from typing import Optional, List
 from decimal import Decimal
 from enum import Enum
 from app.utils.utils import formatar_data_str, formatar_valor_pagamento
 
 
 class TipoRegistro(Enum):
-    ZERO = 0, "Header de Arquivo"
-    UM = 1, "Header de Lote"
-    DOIS = 2, "Registros Iniciais do Lote"
-    TRES = 3, "Detalhe"
-    QUATRO = 4, "Registros Finais do Lote"
-    CINCO = 5, "Trailer de Lote"
-    NOVE = 9, "Trailer de Arquivo"
+    HEADER_ARQUIVO = 0, "Header de Arquivo"
+    HEADER_LOTE = 1, "Header de Lote"
+    REGIS_INIC_LOTE = 2, "Registros Iniciais do Lote"
+    DETALHE = 3, "Detalhe"
+    REGIS_FINAL_LOTE = 4, "Registros Finais do Lote"
+    TRAILER_LOTE = 5, "Trailer de Lote"
+    TRAILER_ARQUIVO = 9, "Trailer de Arquivo"
 
 
 class Funcionario(BaseModel):
@@ -69,7 +69,7 @@ class SegmentoA(BaseModel):
         return formatar_data_str(v, '%d%m%Y', '%d/%m/%Y')
 
     @validator('data_real_efetivacao_pagamento_str')
-    def formatar_data_geracao_arquivo(cls, v):
+    def formatar_data_real_geracao_arquivo(cls, v):
         return formatar_data_str(v, '%d%m%Y', '%d/%m/%Y')
 
     @validator('valor_pagamento_str')
@@ -87,13 +87,32 @@ class SegmentoB(BaseModel):
     numero_inscricao_favorecido: str = Field(description="CPF ou CNPJ do favorecido")
 
 
+class DetalheArquivo(BaseModel):
+    segmento_a: SegmentoA
+    segmento_b: SegmentoB
+
+
+class TrailerLote(BaseModel):
+    quantidade_registro: int
+    tipo_registro: int
+    total_pago_lote: str
+
+    @validator('total_pago_lote')
+    def formatar_valor_total_pago_lote(cls, v):
+        return formatar_valor_pagamento(v)
+
+
 class TrailerArquivo(BaseModel):
     quantidade_registro: int
     tipo_registro: int
 
 
+class Lote(BaseModel):
+    detalhe: List[DetalheArquivo]
+    trailer_lote: TrailerLote
+
+
 class ArquivoRetorno(BaseModel):
-    header: HeaderArquivo
-    segmento_a: SegmentoA
-    segmento_b: SegmentoB
+    header_arquivo: HeaderArquivo
+    lote: Lote
     trailer_arquivo: TrailerArquivo

@@ -5,7 +5,8 @@ from typing import List
 
 from app.utils.exceptions import finalizar_programa_error
 from decimal import Decimal
-from app.dto.models import Funcionario, ArquivoRetorno
+from app.dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
+    DetalheArquivo, TipoRegistro, TrailerLote
 
 DIR_LIQUIDO_FOLHA = '../resources/entrada/liquido_folha/'
 DIR_RETORNO_BANCARIO = '../resources/entrada/retorno_bancario/'
@@ -62,7 +63,6 @@ def carregar_lista_funcionarios_liquido_folha() -> dict:
     return MAP_LIQUIDO_FOLHA
 
 
-# TODO: remover index (usado apenas para conferencia)
 def adicionar_funcionario_map_liquido_folha(funcionario: Funcionario):
     codigo_filial = funcionario.descricao_filial.split("-")[0]
 
@@ -76,17 +76,52 @@ def adicionar_funcionario_map_liquido_folha(funcionario: Funcionario):
 
 def carregar_retornos_bancario() -> List[ArquivoRetorno]:
     try:
-        lista_retornos_bancario = os.listdir(DIR_RETORNO_BANCARIO)
+        lista_arquivos_retorno = []
+        arquivos_retornos_bancario = os.listdir(DIR_RETORNO_BANCARIO)
 
-        for nome_arquivo in lista_retornos_bancario:
+        for nome_arquivo in arquivos_retornos_bancario:
             arq_retorno = os.path.join(DIR_RETORNO_BANCARIO, nome_arquivo)
             with open(arq_retorno, "r") as arquivo:
                 dados_retorno_bancario = arquivo.readlines()
+                lista_detalhes = []
 
-                for linha_arquivo_retorno in dados_retorno_bancario:
-                    print(linha_arquivo_retorno)
-                    break
+                for registro in dados_retorno_bancario:
+                    # print(registro)
+                    tipo_registro = registro[7:8]
 
-        return []
+                    if tipo_registro == TipoRegistro.HEADER_ARQUIVO.value[0]:
+                        header = gerar_header_arquivo(registro)
+                    elif tipo_registro == TipoRegistro.DETALHE.value[0]:
+                        lista_detalhes.append(gerar_detalhe(registro))
+                    elif tipo_registro == TipoRegistro.TRAILER_LOTE.value[0]:
+                        trailer_lote = gerar_trailer_lote(registro)
+                    elif tipo_registro == TipoRegistro.TRAILER_ARQUIVO.value[0]:
+                        trailer_arquivo = gerar_trailer_arquivo(registro)
+
+        return lista_arquivos_retorno
     except Exception as error:
         finalizar_programa_error(f"Ocorreu um erro ao tentar carregar arquivo de retorno bancario: {error}")
+
+
+def gerar_header_arquivo(registro: str) -> HeaderArquivo:
+    return HeaderArquivo()
+
+
+def gerar_trailer_arquivo(registro: str) -> TrailerArquivo:
+    return TrailerArquivo()
+
+
+def gerar_segmento_a(registro: str) -> SegmentoA:
+    return SegmentoA()
+
+
+def gerar_segmento_b(registro: str) -> SegmentoB:
+    return SegmentoB()
+
+
+def gerar_detalhe(registro: str) -> DetalheArquivo:
+    return DetalheArquivo()
+
+
+def gerar_trailer_lote(registro: str) -> TrailerLote:
+    return TrailerLote()
