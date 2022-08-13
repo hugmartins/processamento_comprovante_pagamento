@@ -47,18 +47,19 @@ def carregar_lista_funcionarios_liquido_folha() -> dict:
             # pular cabeçalho
             next(dados_liquido_folha, None)
             for linha in dados_liquido_folha:
-                funcionario = Funcionario(
-                    descricao_filial=linha[0],
-                    nome_completo=linha[1],
-                    id_funcionario=linha[2],
-                    cpf=linha[3],
-                    agencia_salario=linha[4],
-                    conta_salario=linha[5],
-                    banco=linha[6],
-                    src_total_verba=Decimal(linha[7].replace(".", "").replace(",", "."))
-                )
+                if linha[6] == "BRADESCO":
+                    funcionario = Funcionario(
+                        descricao_filial=linha[0],
+                        nome_completo=linha[1],
+                        id_funcionario=linha[2],
+                        cpf=linha[3],
+                        agencia_salario=linha[4],
+                        conta_salario=linha[5],
+                        banco=linha[6],
+                        src_total_verba=Decimal(linha[7].replace(".", "").replace(",", "."))
+                    )
 
-                adicionar_funcionario_map_liquido_folha(funcionario)
+                    adicionar_funcionario_map_liquido_folha(funcionario)
 
         return MAP_LIQUIDO_FOLHA
     except Exception as error:
