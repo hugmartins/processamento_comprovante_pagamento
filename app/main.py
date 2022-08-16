@@ -15,6 +15,12 @@ def configurar_log():
 
 if __name__ == '__main__':
     configurar_log()
-    logging.info(f'Iniciando processamento comprovantes bancarios: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}.')
+
+    data_inicio_execucao = datetime.now()
+    logging.info(f'Iniciando processamento comprovantes bancarios: {data_inicio_execucao.strftime("%d/%m/%Y %H:%M:%S")}.')
     iniciar_processamento()
-    logging.info(f'Processamento comprovantes finalizado: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}.')
+    data_fim_execucao = datetime.now()
+    logging.info(f'Processamento comprovantes finalizado: {data_fim_execucao.strftime("%d/%m/%Y %H:%M:%S")}.')
+
+    durancao_processamento = data_fim_execucao - data_inicio_execucao
+    logging.info(f'Duração processamento: {durancao_processamento}')
