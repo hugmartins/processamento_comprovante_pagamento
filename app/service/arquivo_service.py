@@ -11,8 +11,6 @@ from app.dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerAr
 DIR_LIQUIDO_FOLHA = '../resources/entrada/liquido_folha/'
 DIR_RETORNO_BANCARIO = '../resources/entrada/retorno_bancario/'
 
-MAP_LIQUIDO_FOLHA = {}
-
 
 def validar_diretorio_liquido_folha():
     lista_arquivos_liquido_folha = os.listdir(DIR_LIQUIDO_FOLHA)
@@ -38,8 +36,9 @@ def buscar_endereco_arquivo_liquido_folha():
     return arq_liquido_folha
 
 
-def carregar_lista_funcionarios_liquido_folha() -> dict:
+def carregar_lista_funcionarios_liquido_folha() -> List[Funcionario]:
     logging.info('Carregando dados do arquivo Liquido Folha.')
+    lista_funcionarios_liquido_folha = []
     try:
         with open(buscar_endereco_arquivo_liquido_folha(), 'r') as arquivo:
             dados_liquido_folha = csv.reader(arquivo, delimiter=';')
@@ -59,22 +58,11 @@ def carregar_lista_funcionarios_liquido_folha() -> dict:
                         src_total_verba=Decimal(linha[7].replace(".", "").replace(",", "."))
                     )
 
-                    adicionar_funcionario_map_liquido_folha(funcionario)
+                    lista_funcionarios_liquido_folha.append(funcionario)
 
-        return MAP_LIQUIDO_FOLHA
+        return lista_funcionarios_liquido_folha
     except Exception as error:
         finalizar_programa_error(f"Ocorreu um erro ao tentar carregar arquivo Liquido folha: {error}.")
-
-
-def adicionar_funcionario_map_liquido_folha(funcionario: Funcionario):
-    codigo_filial = funcionario.descricao_filial.split("-")[0]
-
-    if codigo_filial in MAP_LIQUIDO_FOLHA:
-        lista_funcionarios_filial = MAP_LIQUIDO_FOLHA[codigo_filial]
-        lista_funcionarios_filial.append(funcionario)
-        MAP_LIQUIDO_FOLHA[codigo_filial] = lista_funcionarios_filial
-    else:
-        MAP_LIQUIDO_FOLHA[codigo_filial] = [funcionario]
 
 
 def carregar_retornos_bancario() -> List[ArquivoRetorno]:

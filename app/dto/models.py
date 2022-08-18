@@ -15,17 +15,6 @@ class TipoRegistro(Enum):
     TRAILER_ARQUIVO = 9, "Trailer de Arquivo"
 
 
-class Funcionario(BaseModel):
-    descricao_filial: str = Field(title="Descricao Filial", example="010001-ESCRITÓRIO CENTRAL")
-    nome_completo: str = Field(title="Nome Funcionario", example="Fulano da Silva")
-    id_funcionario: str = Field(title="Identificador Funcionario", example="0123456789", regex=r'^[0-9]{12}$')
-    cpf: str = Field(title="CPF ou CNPJ Funcionario", example="12345678900", regex=r'(^[0-9]{11}$)|(^[0-9]{14}$)')
-    agencia_salario: Optional[str] = None
-    conta_salario: Optional[str] = None
-    banco: str = Field(title="Banco Recebedor", example="BRADESCO")
-    src_total_verba: Decimal = Field(title="Valor Pagamento", example="1.000,10")
-
-
 class HeaderArquivo(BaseModel):
     banco: str
     lote: int
@@ -116,3 +105,15 @@ class ArquivoRetorno(BaseModel):
     header_arquivo: HeaderArquivo
     lote: Lote
     trailer_arquivo: TrailerArquivo
+
+
+class Funcionario(BaseModel):
+    descricao_filial: str = Field(title="Descricao Filial", example="010001-ESCRITÓRIO CENTRAL")
+    nome_completo: str = Field(title="Nome Funcionario", example="Fulano da Silva")
+    id_funcionario: str = Field(title="Identificador Funcionario", example="0123456789", regex=r'^[0-9]{12}$')
+    cpf: str = Field(title="CPF ou CNPJ Funcionario", example="12345678900", regex=r'(^[0-9]{11}$)|(^[0-9]{14}$)')
+    agencia_salario: Optional[str] = None
+    conta_salario: Optional[str] = None
+    banco: str = Field(title="Banco Recebedor", example="BRADESCO")
+    src_total_verba: Decimal = Field(title="Valor Pagamento", example="1.000,10")
+    dados_comprovante: DetalheArquivo = Field(title="Dados comprovante pagamento", default=None)
