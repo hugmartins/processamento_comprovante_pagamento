@@ -73,23 +73,32 @@ def carregar_retornos_bancario() -> List[ArquivoRetorno]:
 
         for nome_arquivo in arquivos_retornos_bancario:
             arq_retorno = os.path.join(DIR_RETORNO_BANCARIO, nome_arquivo)
-            with open(arq_retorno, "r") as arquivo:
-                conteudo_arq_retorno = gerar_arquivo_retorno(arquivo.readlines())
-                lista_arquivos_retorno.append(conteudo_arq_retorno)
+            dados_retorno_bancario = ler_arquivo_retorno(arq_retorno)
+
+            primeira_linha = dados_retorno_bancario[0]
+            if int(primeira_linha[0:3]) != 237 and int(primeira_linha[142:143]) != 2:
+                finalizar_programa_error(f"Arquivo {arq_retorno} nao 'e arquivo de retorno do BRADESCO.")
+
+            conteudo_arq_retorno = gerar_arquivo_retorno_bradesco(dados_retorno_bancario)
+            lista_arquivos_retorno.append(conteudo_arq_retorno)
 
         return lista_arquivos_retorno
     except Exception as error:
         finalizar_programa_error(f"Ocorreu um erro ao tentar carregar arquivo de retorno bancario: {error}.")
 
 
-def gerar_arquivo_retorno(dados_retorno_bancario: List[str]) -> ArquivoRetorno:
+def ler_arquivo_retorno(arquivo_retorno: str) -> List[str]:
+    with open(arquivo_retorno, "r") as arquivo:
+        return arquivo.readlines()
+
+
+def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str]) -> ArquivoRetorno:
     lista_detalhes = []
     header_arquivo = None
     trailer_lote = None
     trailer_arquivo = None
 
     for registro in dados_retorno_bancario:
-        # print(registro)
         tipo_registro = int(registro[7:8])
 
         if tipo_registro == TipoRegistro.HEADER_ARQUIVO.value[0]:
