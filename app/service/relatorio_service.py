@@ -2,33 +2,67 @@ import os
 from typing import List
 from app.dto.models import Funcionario, ReportComprovante
 from pyreportjasper import PyReportJasper
+from app.utils.utils import data_atual_formatada, formatar_cpf_funcionario, formatar_data_str
+
+
+RESOURCES_DIR = '../jasper_report/datasource/'
+REPORTS_DIR = '../jasper_report/report/'
 
 
 def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
-    print('gerando_relatorio')
+    for codigo_filial in map_funcionarios_comprovante:
+        lista_report_comprovante = []
+        for funcionario_filial in map_funcionarios_comprovante[codigo_filial]:
+            comprovante_report = converter_funcionario_para_report_comprovante(funcionario_filial)
+            lista_report_comprovante.append(comprovante_report)
 
 
-def preparar_objeto_para_gerar_relatorio(funcionarios: Funcionario) -> List[ReportComprovante]:
-    return [ReportComprovante()]
+def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> ReportComprovante:
+    cpf = formatar_cpf_funcionario(funcionario.cpf)
+    agencia_pagamento = gerar_agencia_ou_conta_com_digito_verificador(
+        funcionario.dados_comprovante.detalhe_comprovante.segmento_a.agencia,
+        int(funcionario.dados_comprovante.detalhe_comprovante.segmento_a.digito_verificador_agencia)
+    )
+    conta_pagamento = gerar_agencia_ou_conta_com_digito_verificador(
+        funcionario.dados_comprovante.detalhe_comprovante.segmento_a.numero_conta,
+        int(funcionario.dados_comprovante.detalhe_comprovante.segmento_a.digito_verificador_conta)
+    )
+
+    return ReportComprovante(
+            data_emissao_relatorio=data_atual_formatada('%d/%m/%Y'),
+            nome_empresa_pagadora=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
+            nome_favorecido=funcionario.nome_completo.upper(),
+            cpf_favorecido=cpf,
+            agencia_pagamento=agencia_pagamento,
+            valor_pago=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.valor_pagamento_str,
+            numero_comprovante=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.nosso_numero,
+            data_pagamento=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.data_pagamento_str,
+            conta_pagamento=conta_pagamento
+        )
+
+
+def gerar_agencia_ou_conta_com_digito_verificador(agencia_ou_conta: str, digito_verificador: int) -> str:
+    if digito_verificador is None:
+        digito_verificador = 0
+
+    return ''.join((agencia_ou_conta, '-', str(digito_verificador)))
 
 
 def json_to_pdf():
-    RESOURCES_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'resources')
-    REPORTS_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'reports')
-    input_file = os.path.join(REPORTS_DIR, 'json.jrxml')
-    output_file = os.path.join(REPORTS_DIR, 'json')
+    input_file = os.path.join(REPORTS_DIR, 'comprovante_pagamento_bradesco.jrxml')
+    output_file = os.path.join(REPORTS_DIR, 'comprovante_pagamento_bradesco')
     conn = {
         'driver': 'json',
-        'data_file': os.path.join(self.RESOURCES_DIR, 'contacts.json'),
-        'json_query': 'contacts.person'
+        'data_file': os.path.join(RESOURCES_DIR, 'comprovantes.json'),
+        'json_query': 'ReportComprovante'
     }
     pyreportjasper = PyReportJasper()
-    self.pyreportjasper.config(
+    pyreportjasper.config(
         input_file,
         output_file,
         output_formats=["pdf"],
         db_connection=conn
     )
-    self.pyreportjasper.process_report()
+    pyreportjasper.process_report()
     print('Result is the file below.')
     print(output_file + '.pdf')

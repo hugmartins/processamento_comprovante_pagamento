@@ -23,4 +23,8 @@ def formatar_data_str(data_str: str, formato_entrada: str, formato_saida: str = 
 
 
 def formatar_valor_pagamento(valor_pagamento: str, quantidade_numeros_inteiros: int, casas_decimais: int = 2) -> str:
-    return ''.join((valor_pagamento[:quantidade_numeros_inteiros], '.', valor_pagamento[-casas_decimais:]))
+    return ''.join((str(int(valor_pagamento[:quantidade_numeros_inteiros])), '.', valor_pagamento[-casas_decimais:]))
+
+
+def formatar_cpf_funcionario(cpf: str):
+    return ''.join((cpf[:3], '.', cpf[3:6], '.', cpf[6:9], '-', cpf[9:]))

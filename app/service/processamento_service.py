@@ -1,7 +1,7 @@
 import logging
 from typing import List
 from app.utils.exceptions import finalizar_programa_error
-from app.dto.models import Funcionario, ArquivoRetorno, DetalheArquivo
+from app.dto.models import Funcionario, ArquivoRetorno, DetalheArquivo, ComprovantePagamentoFuncionario
 from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario
 from app.service.relatorio_service import gerar_relatorio_comprovante
@@ -43,7 +43,10 @@ def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Fun
             for detalhe in arquivo_retorno.lote.detalhe:
                 if funcionario.cpf in detalhe.segmento_b.numero_inscricao_favorecido:
                     comprovante_encontrado = True
-                    funcionario.dados_comprovante = detalhe
+                    funcionario.dados_comprovante = ComprovantePagamentoFuncionario(
+                        nome_empresa_pagadora=arquivo_retorno.header_arquivo.nome_empresa,
+                        detalhe_comprovante=detalhe
+                    )
                     adicionar_funcionario_lista_funcionario_comprovante_por_filial(funcionario)
 
         if comprovante_encontrado is False:

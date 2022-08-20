@@ -107,6 +107,11 @@ class ArquivoRetorno(BaseModel):
     trailer_arquivo: TrailerArquivo
 
 
+class ComprovantePagamentoFuncionario(BaseModel):
+    nome_empresa_pagadora: str = Field(title="Nome empresa pagadora", default=None, example="CBM")
+    detalhe_comprovante: DetalheArquivo = Field(title="Detalhe pagamentos", default=None)
+
+
 class Funcionario(BaseModel):
     descricao_filial: str = Field(title="Descricao Filial", example="010001-ESCRITÓRIO CENTRAL")
     nome_completo: str = Field(title="Nome Funcionario", example="Fulano da Silva")
@@ -116,7 +121,7 @@ class Funcionario(BaseModel):
     conta_salario: Optional[str] = None
     banco: str = Field(title="Banco Recebedor", example="BRADESCO")
     src_total_verba: Decimal = Field(title="Valor Pagamento", example="1.000,10")
-    dados_comprovante: DetalheArquivo = Field(title="Dados comprovante pagamento", default=None)
+    dados_comprovante: ComprovantePagamentoFuncionario = Field(title="Dados comprovante pagamento", default=None)
 
 
 class ReportComprovante(BaseModel):

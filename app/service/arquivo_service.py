@@ -10,6 +10,7 @@ from app.dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerAr
 
 DIR_LIQUIDO_FOLHA = '../resources/entrada/liquido_folha/'
 DIR_RETORNO_BANCARIO = '../resources/entrada/retorno_bancario/'
+DIR_DATASOURCE = '../jasper_report/datasource/'
 
 
 def validar_diretorio_liquido_folha():
@@ -185,3 +186,7 @@ def gerar_trailer_lote(registro: str) -> TrailerLote:
         total_pago_lote=registro[23:41]
 
     )
+
+
+def criar_arquivo_datasource():
+    print('')
