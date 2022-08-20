@@ -124,7 +124,7 @@ class Funcionario(BaseModel):
     dados_comprovante: ComprovantePagamentoFuncionario = Field(title="Dados comprovante pagamento", default=None)
 
 
-class ReportComprovante(BaseModel):
+class DetalheReportComprovante(BaseModel):
     data_emissao_relatorio: str
     nome_empresa_pagadora: str
     nome_favorecido: str
@@ -135,3 +135,6 @@ class ReportComprovante(BaseModel):
     data_pagamento: str
     conta_pagamento: str
 
+
+class ReportComprovante(BaseModel):
+    detalhe_report: List[DetalheReportComprovante]

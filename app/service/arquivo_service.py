@@ -1,12 +1,13 @@
 import logging
 import os.path
 import csv
+import json
 from typing import List
 
 from app.utils.exceptions import finalizar_programa_error
 from decimal import Decimal
 from app.dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
-    DetalheArquivo, TipoRegistro, TrailerLote, Lote
+    DetalheArquivo, TipoRegistro, TrailerLote, Lote, ReportComprovante
 
 DIR_LIQUIDO_FOLHA = '../resources/entrada/liquido_folha/'
 DIR_RETORNO_BANCARIO = '../resources/entrada/retorno_bancario/'
@@ -188,5 +189,7 @@ def gerar_trailer_lote(registro: str) -> TrailerLote:
     )
 
 
-def criar_arquivo_datasource():
-    print('')
+def criar_arquivo_datasource(nome_arquivo: str, comprovantes_pagamento_filial: ReportComprovante):
+    arquivo_datasource = os.path.join(DIR_DATASOURCE, f'{nome_arquivo}.json')
+    with open(arquivo_datasource, 'w', encoding='utf-8') as arquivo:
+        arquivo.write(comprovantes_pagamento_filial.json())

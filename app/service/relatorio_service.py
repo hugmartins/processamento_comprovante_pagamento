@@ -1,8 +1,9 @@
 import os
 from typing import List
-from app.dto.models import Funcionario, ReportComprovante
+from app.dto.models import Funcionario, ReportComprovante, DetalheReportComprovante
 from pyreportjasper import PyReportJasper
 from app.utils.utils import data_atual_formatada, formatar_cpf_funcionario, formatar_data_str
+from app.service.arquivo_service import criar_arquivo_datasource
 
 
 RESOURCES_DIR = '../jasper_report/datasource/'
@@ -13,11 +14,16 @@ def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
     for codigo_filial in map_funcionarios_comprovante:
         lista_report_comprovante = []
         for funcionario_filial in map_funcionarios_comprovante[codigo_filial]:
-            comprovante_report = converter_funcionario_para_report_comprovante(funcionario_filial)
-            lista_report_comprovante.append(comprovante_report)
+            detalhe_comprovante_report = converter_funcionario_para_report_comprovante(funcionario_filial)
+            lista_report_comprovante.append(detalhe_comprovante_report)
+
+        comprovante_report = ReportComprovante(detalhe_report=lista_report_comprovante)
+        data_nome_arquivo = data_atual_formatada()
+        nome_arquivo = f'{codigo_filial}_comprovantes_pagamento_{data_nome_arquivo}'
+        criar_arquivo_datasource(nome_arquivo, comprovante_report)
 
 
-def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> ReportComprovante:
+def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> DetalheReportComprovante:
     cpf = formatar_cpf_funcionario(funcionario.cpf)
     agencia_pagamento = gerar_agencia_ou_conta_com_digito_verificador(
         funcionario.dados_comprovante.detalhe_comprovante.segmento_a.agencia,
@@ -28,7 +34,7 @@ def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> R
         int(funcionario.dados_comprovante.detalhe_comprovante.segmento_a.digito_verificador_conta)
     )
 
-    return ReportComprovante(
+    return DetalheReportComprovante(
             data_emissao_relatorio=data_atual_formatada('%d/%m/%Y'),
             nome_empresa_pagadora=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
             nome_favorecido=funcionario.nome_completo.upper(),
