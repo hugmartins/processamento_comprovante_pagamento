@@ -10,6 +10,7 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="comprovante_pagamento\datasources\DataAdapter.jrdax"/>
 	<parameter name="data_emissao_relatorio" class="java.lang.String"/>
 	<parameter name="nome_empresa_pagadora" class="java.lang.String"/>
 	<parameter name="nome_favorecido" class="java.lang.String"/>
@@ -20,9 +21,49 @@
 	<parameter name="data_pagamento" class="java.lang.String"/>
 	<parameter name="conta_pagamento" class="java.lang.String"/>
 	<parameter name="logo_bradesco" class="java.awt.Image"/>
-	<queryString>
-		<![CDATA[]]>
+	<queryString language="JSON">
+		<![CDATA[detalhe_report.logo_bradesco]]>
 	</queryString>
+	<field name="logo_bradesco" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.logo_bradesco"/>
+		<fieldDescription><![CDATA[detalhe_report.logo_bradesco]]></fieldDescription>
+	</field>
+	<field name="data_emissao_relatorio" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.data_emissao_relatorio"/>
+		<fieldDescription><![CDATA[detalhe_report.data_emissao_relatorio]]></fieldDescription>
+	</field>
+	<field name="nome_empresa_pagadora" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.nome_empresa_pagadora"/>
+		<fieldDescription><![CDATA[detalhe_report.nome_empresa_pagadora]]></fieldDescription>
+	</field>
+	<field name="nome_favorecido" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.nome_favorecido"/>
+		<fieldDescription><![CDATA[detalhe_report.nome_favorecido]]></fieldDescription>
+	</field>
+	<field name="cpf_favorecido" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.cpf_favorecido"/>
+		<fieldDescription><![CDATA[detalhe_report.cpf_favorecido]]></fieldDescription>
+	</field>
+	<field name="agencia_pagamento" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.agencia_pagamento"/>
+		<fieldDescription><![CDATA[detalhe_report.agencia_pagamento]]></fieldDescription>
+	</field>
+	<field name="valor_pago" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.valor_pago"/>
+		<fieldDescription><![CDATA[detalhe_report.valor_pago]]></fieldDescription>
+	</field>
+	<field name="numero_comprovante" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.numero_comprovante"/>
+		<fieldDescription><![CDATA[detalhe_report.numero_comprovante]]></fieldDescription>
+	</field>
+	<field name="data_pagamento" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.data_pagamento"/>
+		<fieldDescription><![CDATA[detalhe_report.data_pagamento]]></fieldDescription>
+	</field>
+	<field name="conta_pagamento" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.conta_pagamento"/>
+		<fieldDescription><![CDATA[detalhe_report.conta_pagamento]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -30,7 +71,7 @@
 		<band height="110" splitType="Stretch">
 			<image onErrorType="Blank">
 				<reportElement x="500" y="10" width="50" height="62" uuid="8d7da921-d869-47fd-8e5d-68a9c5777067"/>
-				<imageExpression><![CDATA[$P{logo_bradesco}]]></imageExpression>
+				<imageExpression><![CDATA[$F{logo_bradesco}]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="10" y="10" width="480" height="32" uuid="9f199213-fb92-4614-b573-1b5d60db043d"/>
@@ -51,14 +92,14 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{data_emissao_relatorio}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{data_emissao_relatorio}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="179" y="80" width="332" height="30" uuid="156d92d8-4bfc-4e83-a17a-9fbcdaa294ff"/>
 				<textElement verticalAlignment="Middle">
 					<font size="16"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{nome_empresa_pagadora}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{nome_empresa_pagadora}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="10" y="80" width="230" height="30" uuid="a0c130cf-c679-47a4-81d8-0933ea8b47a2"/>
@@ -123,37 +164,37 @@
 			<textField>
 				<reportElement x="120" y="10" width="430" height="30" uuid="4a77f07f-c452-4f92-8dc3-e3a8491163d8"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{nome_favorecido}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{nome_favorecido}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="75" y="90" width="124" height="30" uuid="605e988d-c0f7-4feb-a299-5fb50216d5f9"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{agencia_pagamento}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{agencia_pagamento}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="45" y="50" width="154" height="30" uuid="fde6c1f0-3cd9-4fae-b13e-89678498c988"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{cpf_favorecido}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{cpf_favorecido}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="64" y="130" width="290" height="30" uuid="91c0d91f-d8c9-44db-ac1a-530f27cfe693"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{valor_pago}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{valor_pago}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="118" y="170" width="332" height="30" uuid="b1f47c6e-5c2a-46b9-b441-a8bf510feb51"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{numero_comprovante}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{numero_comprovante}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="310" y="90" width="220" height="30" uuid="8821ea5f-dcbb-4b43-834f-84b71b70caed"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{conta_pagamento}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{conta_pagamento}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="310" y="50" width="170" height="30" uuid="b2e15d06-676b-4160-b9ec-92964a6581e3"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{data_pagamento}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{data_pagamento}]]></textFieldExpression>
 			</textField>
 			<break>
 				<reportElement x="0" y="220" width="560" height="1" uuid="a78c861f-59b4-4c3a-a90c-a83f87d25d0a"/>

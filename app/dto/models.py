@@ -109,6 +109,7 @@ class ArquivoRetorno(BaseModel):
 
 class ComprovantePagamentoFuncionario(BaseModel):
     nome_empresa_pagadora: str = Field(title="Nome empresa pagadora", default=None, example="CBM")
+    data_geracao_arquivo_comprovante: str = Field(title="Data da geracao do arquivo de pagamento", default=None, example="202208")
     detalhe_comprovante: DetalheArquivo = Field(title="Detalhe pagamentos", default=None)
 
 
@@ -125,15 +126,16 @@ class Funcionario(BaseModel):
 
 
 class DetalheReportComprovante(BaseModel):
+    logo_bradesco: str
     data_emissao_relatorio: str
     nome_empresa_pagadora: str
     nome_favorecido: str
     cpf_favorecido: str
     agencia_pagamento: str
+    conta_pagamento: str
+    data_pagamento: str
     valor_pago: str
     numero_comprovante: str
-    data_pagamento: str
-    conta_pagamento: str
 
 
 class ReportComprovante(BaseModel):

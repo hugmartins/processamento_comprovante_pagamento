@@ -9,21 +9,28 @@ from app.service.arquivo_service import criar_arquivo_datasource
 
 RESOURCES_DIR = '../jasper_report/datasource/'
 REPORTS_DIR = '../jasper_report/report/'
+DIR_COMPROVANTE_POR_FILIAL = '../resources/saida/comprovantes/'
+DIR_IMG_REPORT = '../jasper_report/img/'
 
 
 def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
     for codigo_filial in map_funcionarios_comprovante:
         logging.info(f'Gerando comprovantes da filial {codigo_filial}.')
+
         lista_report_comprovante = []
+        data_geracao_arquivo_pagamento = None
+
         for funcionario_filial in map_funcionarios_comprovante[codigo_filial]:
+            data_geracao_arquivo_pagamento = funcionario_filial.dados_comprovante.data_geracao_arquivo_comprovante
             detalhe_comprovante_report = converter_funcionario_para_report_comprovante(funcionario_filial)
             lista_report_comprovante.append(detalhe_comprovante_report)
 
         comprovante_report = ReportComprovante(detalhe_report=lista_report_comprovante)
         data_nome_arquivo = data_atual_formatada()
-        nome_arquivo = f'{codigo_filial}_comprovantes_pagamento_{data_nome_arquivo}'
+        nome_arquivo_datasource = f'{codigo_filial}_comprovantes_pagamento_{data_nome_arquivo}'
 
-        criar_arquivo_datasource(nome_arquivo, comprovante_report)
+        criar_arquivo_datasource(nome_arquivo_datasource, comprovante_report)
+        # json_to_pdf(codigo_filial, data_geracao_arquivo_pagamento, nome_arquivo_datasource)
 
 
 def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> DetalheReportComprovante:
@@ -37,7 +44,10 @@ def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> D
         int(funcionario.dados_comprovante.detalhe_comprovante.segmento_a.digito_verificador_conta)
     )
 
+    diretorio_completo_logo_bradesco = os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_bradesco.png'))
+
     return DetalheReportComprovante(
+            logo_bradesco=diretorio_completo_logo_bradesco,
             data_emissao_relatorio=data_atual_formatada('%d/%m/%Y'),
             nome_empresa_pagadora=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
             nome_favorecido=funcionario.nome_completo.upper(),
@@ -57,10 +67,11 @@ def gerar_agencia_ou_conta_com_digito_verificador(agencia_ou_conta: str, digito_
     return ''.join((agencia_ou_conta, '-', str(digito_verificador)))
 
 
-def json_to_pdf(nome_datasource: str):
+def json_to_pdf(codigo_filial: str, data_geracao_arquivo: str, nome_datasource: str):
     try:
         input_file = os.path.join(REPORTS_DIR, 'comprovante_pagamento_bradesco.jrxml')
-        output_file = os.path.join(REPORTS_DIR, 'comprovante_pagamento_bradesco')
+        output_file = os.path.join(DIR_COMPROVANTE_POR_FILIAL
+                                   , f'{codigo_filial} - {data_geracao_arquivo} - COMPROVANTES FOLPAG BRADESCO')
         conn = {
             'driver': 'json',
             'data_file': os.path.join(RESOURCES_DIR, f'{nome_datasource}.json'),
