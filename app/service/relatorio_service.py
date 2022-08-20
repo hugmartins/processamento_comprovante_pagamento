@@ -1,9 +1,8 @@
 import os
 import logging
-from typing import List
 from app.dto.models import Funcionario, ReportComprovante, DetalheReportComprovante
 from pyreportjasper import PyReportJasper
-from app.utils.utils import data_atual_formatada, formatar_cpf_funcionario, formatar_data_str
+from app.utils.utils import data_atual_formatada, formatar_cpf_funcionario
 from app.utils.exceptions import finalizar_programa_error
 from app.service.arquivo_service import criar_arquivo_datasource
 

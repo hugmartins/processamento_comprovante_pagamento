@@ -1,8 +1,6 @@
 import logging
 import os.path
 import csv
-import json
-import time
 from typing import List
 
 from app.utils.exceptions import finalizar_programa_error

@@ -1,7 +1,7 @@
 import logging
 from typing import List
 from app.utils.exceptions import finalizar_programa_error
-from app.dto.models import Funcionario, ArquivoRetorno, DetalheArquivo, ComprovantePagamentoFuncionario
+from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario
 from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, excluir_datasources_existentes
 from app.service.relatorio_service import gerar_relatorio_comprovante
