@@ -30,7 +30,7 @@ def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
         nome_arquivo_datasource = f'{codigo_filial}_comprovantes_pagamento_{data_nome_arquivo}'
 
         criar_arquivo_datasource(nome_arquivo_datasource, comprovante_report)
-        # json_to_pdf(codigo_filial, data_geracao_arquivo_pagamento, nome_arquivo_datasource)
+        gerar_relatorio_pdf(codigo_filial, data_geracao_arquivo_pagamento, nome_arquivo_datasource)
 
 
 def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> DetalheReportComprovante:
@@ -67,16 +67,23 @@ def gerar_agencia_ou_conta_com_digito_verificador(agencia_ou_conta: str, digito_
     return ''.join((agencia_ou_conta, '-', str(digito_verificador)))
 
 
-def json_to_pdf(codigo_filial: str, data_geracao_arquivo: str, nome_datasource: str):
+def gerar_relatorio_pdf(codigo_filial: str, data_geracao_arquivo: str, nome_datasource: str):
     try:
         input_file = os.path.join(REPORTS_DIR, 'comprovante_pagamento_bradesco.jrxml')
         output_file = os.path.join(DIR_COMPROVANTE_POR_FILIAL
                                    , f'{codigo_filial} - {data_geracao_arquivo} - COMPROVANTES FOLPAG BRADESCO')
         conn = {
-            'driver': 'json',
-            'data_file': os.path.join(RESOURCES_DIR, f'{nome_datasource}.json'),
-            'json_query': 'detalhe_report'
+            'driver': 'csv',
+            'data_file': os.path.abspath(os.path.join(RESOURCES_DIR, f'{nome_datasource}.csv')),
+            'csv_charset': 'utf-8',
+            'csv_out_charset': 'utf-8',
+            'csv_field_del': ',',
+            'csv_out_field_del': ',',
+            'csv_record_del': "\n",
+            'csv_first_row': True,
+            'csv_columns': list(DetalheReportComprovante.schema()["properties"].keys())
         }
+
         pyreportjasper = PyReportJasper()
         pyreportjasper.config(
             input_file,
@@ -85,7 +92,6 @@ def json_to_pdf(codigo_filial: str, data_geracao_arquivo: str, nome_datasource: 
             db_connection=conn
         )
         pyreportjasper.process_report()
-        print('Result is the file below.')
-        print(output_file + '.pdf')
+        logging.info(f'Comprovantes da filial {codigo_filial} gerados com sucesso. {output_file}.pdf')
     except Exception as error:
         finalizar_programa_error(f'Erro ao tentar gerar PDF a partir do datasource {nome_datasource}. {error}')

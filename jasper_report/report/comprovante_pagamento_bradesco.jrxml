@@ -10,18 +10,8 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="comprovante_pagamento\datasources\DataAdapter.jrdax"/>
-	<parameter name="data_emissao_relatorio" class="java.lang.String"/>
-	<parameter name="nome_empresa_pagadora" class="java.lang.String"/>
-	<parameter name="nome_favorecido" class="java.lang.String"/>
-	<parameter name="cpf_favorecido" class="java.lang.String"/>
-	<parameter name="agencia_pagamento" class="java.lang.String"/>
-	<parameter name="valor_pago" class="java.lang.String"/>
-	<parameter name="numero_comprovante" class="java.lang.String"/>
-	<parameter name="data_pagamento" class="java.lang.String"/>
-	<parameter name="conta_pagamento" class="java.lang.String"/>
-	<parameter name="logo_bradesco" class="java.awt.Image"/>
-	<queryString language="JSON">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="comprovante_pagamento\datasources\DataAdapterComprovanteCSV.jrdax"/>
+	<queryString language="csv">
 		<![CDATA[detalhe_report.logo_bradesco]]>
 	</queryString>
 	<field name="logo_bradesco" class="java.lang.String">
