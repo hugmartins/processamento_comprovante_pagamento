@@ -11,16 +11,19 @@
 	<parameter name="nome_funcionario" class="java.lang.String"/>
 	<parameter name="cpf" class="java.lang.String"/>
 	<parameter name="valor_a_pagar" class="java.lang.String"/>
+	<parameter name="total_funcionarios" class="java.lang.String"/>
+	<parameter name="total_com_comprovante" class="java.lang.String"/>
+	<parameter name="total_sem_comprovante" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<group name="FilialGroup" isStartNewPage="true" isReprintHeaderOnEachPage="true">
 		<groupExpression><![CDATA[$P{filial}]]></groupExpression>
 		<groupHeader>
-			<band height="20">
+			<band height="37">
 				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				<staticText>
-					<reportElement mode="Opaque" x="1" y="3" width="75" height="17" forecolor="#FFFFFF" backcolor="#C4C4C4" uuid="f6524f47-e847-45ea-9638-f197037fdc06">
+					<reportElement mode="Opaque" x="1" y="3" width="39" height="17" forecolor="#FFFFFF" backcolor="#C4C4C4" uuid="f6524f47-e847-45ea-9638-f197037fdc06">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
 					<box>
@@ -35,7 +38,7 @@
 					<text><![CDATA[Filial]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="76" y="3" width="477" height="17" uuid="f75fd152-0de9-4a24-bdb4-22f04128cf21">
+					<reportElement x="40" y="3" width="514" height="17" uuid="f75fd152-0de9-4a24-bdb4-22f04128cf21">
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
@@ -50,6 +53,78 @@
 						<paragraph lineSpacing="Single" leftIndent="3"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{filial}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="40" y="20" width="80" height="17" uuid="2e40bff1-c0b5-4505-babc-9cd01f3aa9ca"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total funcionarios:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="114" y="20" width="49" height="17" uuid="8f225dea-bd36-4197-baf2-861bc23fca80">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0" lineColor="#D4D4D4"/>
+						<leftPen lineWidth="0.0" lineColor="#D4D4D4"/>
+						<bottomPen lineWidth="1.0" lineColor="#D4D4D4"/>
+						<rightPen lineWidth="1.0" lineColor="#D4D4D4"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph lineSpacing="Single" leftIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{total_funcionarios}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="180" y="20" width="100" height="17" uuid="e5b05d1c-8c17-45b0-9dae-b42750ac2a23"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total com comprovante:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="275" y="20" width="49" height="17" uuid="243d348d-58d2-48e5-93b0-8bbac2c54d1e">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0" lineColor="#D4D4D4"/>
+						<leftPen lineWidth="0.0" lineColor="#D4D4D4"/>
+						<bottomPen lineWidth="1.0" lineColor="#D4D4D4"/>
+						<rightPen lineWidth="1.0" lineColor="#D4D4D4"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph lineSpacing="Single" leftIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{total_com_comprovante}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="340" y="20" width="111" height="17" uuid="b1daf947-22cb-41d2-ba4c-a79ff9c3cbe1"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total sem comprovante:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="435" y="20" width="49" height="17" uuid="62e0be4e-e224-4431-af1d-670374923654">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0" lineColor="#D4D4D4"/>
+						<leftPen lineWidth="0.0" lineColor="#D4D4D4"/>
+						<bottomPen lineWidth="1.0" lineColor="#D4D4D4"/>
+						<rightPen lineWidth="1.0" lineColor="#D4D4D4"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph lineSpacing="Single" leftIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{total_sem_comprovante}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>

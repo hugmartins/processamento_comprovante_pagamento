@@ -4,6 +4,7 @@ from app.utils.exceptions import finalizar_programa_error
 from app.dto.models import Funcionario, ArquivoRetorno, DetalheArquivo
 from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario
+from app.service.relatorio_service import gerar_relatorio_comprovante
 
 MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL = {}
 MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL = {}
@@ -29,6 +30,8 @@ def iniciar_processamento():
 
     logging.info(f'funcionarios COM comprovante: {len(LISTA_CPF_COM_COMPROVANTE)}')
     logging.warning(f'funcionarios SEM comprovante: {len(LISTA_CPF_SEM_COMPROVANTE)}')
+
+    gerar_relatorio_comprovante(MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL)
 
 
 def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Funcionario],

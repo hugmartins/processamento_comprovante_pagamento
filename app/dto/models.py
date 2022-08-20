@@ -117,3 +117,16 @@ class Funcionario(BaseModel):
     banco: str = Field(title="Banco Recebedor", example="BRADESCO")
     src_total_verba: Decimal = Field(title="Valor Pagamento", example="1.000,10")
     dados_comprovante: DetalheArquivo = Field(title="Dados comprovante pagamento", default=None)
+
+
+class ReportComprovante(BaseModel):
+    data_emissao_relatorio: str
+    nome_empresa_pagadora: str
+    nome_favorecido: str
+    cpf_favorecido: str
+    agencia_pagamento: str
+    valor_pago: str
+    numero_comprovante: str
+    data_pagamento: str
+    conta_pagamento: str
+
