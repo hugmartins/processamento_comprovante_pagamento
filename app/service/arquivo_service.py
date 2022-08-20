@@ -2,6 +2,7 @@ import logging
 import os.path
 import csv
 import json
+import time
 from typing import List
 
 from app.utils.exceptions import finalizar_programa_error
@@ -191,5 +192,15 @@ def gerar_trailer_lote(registro: str) -> TrailerLote:
 
 def criar_arquivo_datasource(nome_arquivo: str, comprovantes_pagamento_filial: ReportComprovante):
     arquivo_datasource = os.path.join(DIR_DATASOURCE, f'{nome_arquivo}.json')
-    with open(arquivo_datasource, 'w', encoding='utf-8') as arquivo:
-        arquivo.write(comprovantes_pagamento_filial.json())
+    try:
+        with open(arquivo_datasource, 'w', encoding='utf-8') as arquivo:
+            arquivo.write(comprovantes_pagamento_filial.json())
+    except Exception as error:
+        finalizar_programa_error(f'Erro ao tentar gerar datasource {nome_arquivo}. {error}')
+
+
+def excluir_datasources_existentes():
+    lista_datasources = os.listdir(DIR_DATASOURCE)
+    for datasource in lista_datasources:
+        ds_para_excluir = os.path.join(DIR_DATASOURCE, datasource)
+        os.remove(ds_para_excluir)

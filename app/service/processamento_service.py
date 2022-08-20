@@ -3,7 +3,7 @@ from typing import List
 from app.utils.exceptions import finalizar_programa_error
 from app.dto.models import Funcionario, ArquivoRetorno, DetalheArquivo, ComprovantePagamentoFuncionario
 from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
-    carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario
+    carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, excluir_datasources_existentes
 from app.service.relatorio_service import gerar_relatorio_comprovante
 
 MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL = {}
@@ -15,6 +15,7 @@ LISTA_CPF_SEM_COMPROVANTE = []
 
 def iniciar_processamento():
     validar_arquivos_existentes()
+    excluir_datasources_existentes()
     funcionarios_liquido_folha = carregar_lista_funcionarios_liquido_folha()
     lista_arquivos_retorno_bancario = carregar_retornos_bancario()
 
