@@ -149,19 +149,9 @@ def montar_parametros_para_gerar_relatorio_comprovante_pagamento(codigo_filial: 
         input_file = os.path.join(REPORTS_DIR, 'comprovante_pagamento_bradesco.jrxml')
         output_file = os.path.join(DIR_COMPROVANTE_POR_FILIAL
                                    , f'{codigo_filial} - {data_geracao_arquivo} - COMPROVANTES FOLPAG BRADESCO')
-        conn = {
-            'driver': 'csv',
-            'data_file': os.path.abspath(os.path.join(RESOURCES_DIR, f'{nome_datasource}.csv')),
-            'csv_charset': 'utf-8',
-            'csv_out_charset': 'utf-8',
-            'csv_field_del': ',',
-            'csv_out_field_del': ',',
-            'csv_record_del': "\n",
-            'csv_first_row': True,
-            'csv_columns': list(DetalheReportComprovante.schema()["properties"].keys())
-        }
+        nome_colunas_csv = list(DetalheReportComprovante.schema()["properties"].keys())
 
-        gerar_relatorio_jaspersoft(input_file, output_file, conn)
+        gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv)
 
         logging.info(f'Comprovantes da filial {codigo_filial} gerados com sucesso. {output_file}.pdf')
     except Exception as error:
@@ -173,26 +163,29 @@ def montar_parametros_para_gerar_relatorio_resultado_processamento(nome_datasour
         input_file = os.path.join(REPORTS_DIR, 'relatorio_processamento_comprovante.jrxml')
         output_file = os.path.join(DIR_RELATORIO_RESULTADO_PROCESSAMENTO
                                    , f'RESULTADO_PROCESSAMENTO_{data_atual_formatada("%d_%m_%Y_%H%M%S")}')
-        conn = {
-            'driver': 'csv',
-            'data_file': os.path.abspath(os.path.join(RESOURCES_DIR, f'{nome_datasource}.csv')),
-            'csv_charset': 'utf-8',
-            'csv_out_charset': 'utf-8',
-            'csv_field_del': ',',
-            'csv_out_field_del': ',',
-            'csv_record_del': "\n",
-            'csv_first_row': True,
-            'csv_columns': list(DetalheReportResusltadoProcessamento.schema()["properties"].keys())
-        }
+        nome_colunas_csv = list(DetalheReportResusltadoProcessamento.schema()["properties"].keys())
 
-        gerar_relatorio_jaspersoft(input_file, output_file, conn)
+        gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv)
 
         logging.info(f'Relatorio com resultado do processamento gerado com sucesso. {output_file}.pdf')
     except Exception as error:
         finalizar_programa_error(f'Erro ao tentar gerar PDF a partir do datasource {nome_datasource}. {error}')
 
 
-def gerar_relatorio_jaspersoft(input_file: str, output_file: str, conn: dict):
+def gerar_relatorio_jaspersoft(input_file: str, output_file: str, nome_datasource: str, nome_colunas_csv: list):
+
+    conn = {
+        'driver': 'csv',
+        'data_file': os.path.abspath(os.path.join(RESOURCES_DIR, f'{nome_datasource}.csv')),
+        'csv_charset': 'utf-8',
+        'csv_out_charset': 'utf-8',
+        'csv_field_del': ',',
+        'csv_out_field_del': ',',
+        'csv_record_del': "\n",
+        'csv_first_row': True,
+        'csv_columns': nome_colunas_csv
+    }
+
     pyreportjasper = PyReportJasper()
     pyreportjasper.config(
         input_file,

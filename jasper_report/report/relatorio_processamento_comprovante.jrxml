@@ -20,10 +20,10 @@
 	<group name="FilialGroup" isReprintHeaderOnEachPage="true">
 		<groupExpression><![CDATA[$F{filial}]]></groupExpression>
 		<groupHeader>
-			<band height="68">
+			<band height="72">
 				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				<staticText>
-					<reportElement mode="Opaque" x="1" y="33" width="39" height="17" forecolor="#FFFFFF" backcolor="#C4C4C4" uuid="f6524f47-e847-45ea-9638-f197037fdc06">
+					<reportElement mode="Opaque" x="1" y="38" width="39" height="17" forecolor="#FFFFFF" backcolor="#C4C4C4" uuid="f6524f47-e847-45ea-9638-f197037fdc06">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
 					<box>
@@ -38,7 +38,7 @@
 					<text><![CDATA[Filial]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="40" y="33" width="514" height="17" uuid="f75fd152-0de9-4a24-bdb4-22f04128cf21">
+					<reportElement x="40" y="38" width="514" height="17" uuid="f75fd152-0de9-4a24-bdb4-22f04128cf21">
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
@@ -55,14 +55,14 @@
 					<textFieldExpression><![CDATA[$F{filial}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="340" y="5" width="64" height="27" uuid="2e40bff1-c0b5-4505-babc-9cd01f3aa9ca"/>
+					<reportElement x="340" y="10" width="64" height="27" uuid="2e40bff1-c0b5-4505-babc-9cd01f3aa9ca"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total funcionarios]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="348" y="33" width="49" height="17" uuid="8f225dea-bd36-4197-baf2-861bc23fca80">
+					<reportElement x="348" y="38" width="49" height="17" uuid="8f225dea-bd36-4197-baf2-861bc23fca80">
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
@@ -79,14 +79,14 @@
 					<textFieldExpression><![CDATA[$F{total_funcionarios}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="404" y="5" width="70" height="27" uuid="e5b05d1c-8c17-45b0-9dae-b42750ac2a23"/>
+					<reportElement x="404" y="10" width="70" height="27" uuid="e5b05d1c-8c17-45b0-9dae-b42750ac2a23"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total com comprovante]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="415" y="33" width="49" height="17" uuid="243d348d-58d2-48e5-93b0-8bbac2c54d1e">
+					<reportElement x="415" y="38" width="49" height="17" uuid="243d348d-58d2-48e5-93b0-8bbac2c54d1e">
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
@@ -103,14 +103,14 @@
 					<textFieldExpression><![CDATA[$F{total_com_comprovante}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="474" y="5" width="77" height="27" uuid="b1daf947-22cb-41d2-ba4c-a79ff9c3cbe1"/>
+					<reportElement x="474" y="10" width="77" height="27" uuid="b1daf947-22cb-41d2-ba4c-a79ff9c3cbe1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total sem comprovante]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="488" y="33" width="49" height="17" uuid="62e0be4e-e224-4431-af1d-670374923654">
+					<reportElement x="488" y="38" width="49" height="17" uuid="62e0be4e-e224-4431-af1d-670374923654">
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
@@ -127,7 +127,7 @@
 					<textFieldExpression><![CDATA[$F{total_sem_comprovante}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Transparent" x="1" y="50" width="553" height="17" forecolor="#050505" backcolor="#FFFFFF" uuid="7f52fce7-09b3-4651-83f8-b01ae1323243">
+					<reportElement mode="Transparent" x="1" y="55" width="553" height="17" forecolor="#050505" backcolor="#FFFFFF" uuid="7f52fce7-09b3-4651-83f8-b01ae1323243">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					</reportElement>
 					<box>
