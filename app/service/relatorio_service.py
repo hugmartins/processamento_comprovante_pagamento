@@ -45,8 +45,10 @@ def gerar_relatorio_resultado_processamento(total_funcionarios_por_filial: dict,
                                              dados_funcionarios_com_comprovante_por_filial,
                                              dados_funcionarios_sem_comprovante_por_filial)
 
-    nome_datasource = f'DATASOURCE_RESULTADO_PROCESSAMENTO_{data_atual_formatada()}'
-    criar_arquivo_datasource_resultado_processamento(nome_datasource, relatorio_resultado_processamento)
+    nome_datasource_resultado_processamento = f'DATASOURCE_RESULTADO_PROCESSAMENTO_{data_atual_formatada()}'
+    criar_arquivo_datasource_resultado_processamento(nome_datasource_resultado_processamento,
+                                                     relatorio_resultado_processamento)
+    montar_parametros_para_gerar_relatorio_resultado_processamento(nome_datasource_resultado_processamento)
 
 
 def criar_report_resultado_processamento(total_funcionarios_por_filial: dict,
@@ -66,19 +68,21 @@ def criar_report_resultado_processamento(total_funcionarios_por_filial: dict,
             lista_funcionarios_sem_comprovante = dados_funcionarios_sem_comprovante_por_filial[codigo_filial]
 
         filial = total_funcionarios_por_filial[codigo_filial]
+        nome_filial = filial['nome_filial']
+        quantidade_funcionarios_filial = filial['quantidade_funcionario']
 
         if len(lista_funcionarios_sem_comprovante) > 0:
             for funcionario in lista_funcionarios_sem_comprovante:
                 cpf = formatar_cpf_funcionario(funcionario.cpf)
                 resultado_processamento_funcionario = gerar_detalhe_report_resultado_processamento(
-                    filial['nome_filial'], filial['quantidade_funcionario'], total_funcionario_com_comprovante,
+                    nome_filial, quantidade_funcionarios_filial, total_funcionario_com_comprovante,
                     total_funcionario_sem_comprovante, funcionario.nome_completo, cpf, funcionario.src_total_verba
                 )
 
                 lista_resultado_processamento.append(resultado_processamento_funcionario)
         else:
             resultado_processamento_filial = gerar_detalhe_report_resultado_processamento(
-                filial['nome_filial'], filial['quantidade_funcionario'], total_funcionario_com_comprovante,
+                nome_filial, quantidade_funcionarios_filial, total_funcionario_com_comprovante,
                 total_funcionario_sem_comprovante
             )
             lista_resultado_processamento.append(resultado_processamento_filial)

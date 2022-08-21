@@ -37,7 +37,7 @@ def iniciar_processamento():
     logging.info(f'funcionarios COM comprovante: {len(LISTA_CPF_COM_COMPROVANTE)}')
     logging.warning(f'funcionarios SEM comprovante: {len(LISTA_CPF_SEM_COMPROVANTE)}')
 
-    # gerar_relatorio_comprovante(MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL)
+    gerar_relatorio_comprovante(MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL)
 
     gerar_relatorio_resultado_processamento(MAP_TOTAL_FUNCIONARIOS_POR_FILIAL, MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL,
                                             MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL)
