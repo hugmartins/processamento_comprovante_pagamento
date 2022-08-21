@@ -2,16 +2,20 @@ import logging
 from typing import List
 from app.utils.exceptions import finalizar_programa_error
 from app.utils.utils import formatar_data_str
-from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario
+from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario, ResumoFilial
 from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, excluir_datasources_existentes
-from app.service.relatorio_service import gerar_relatorio_comprovante
+from app.service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento
 
+MAP_TOTAL_FUNCIONARIOS_POR_FILIAL = {}
 MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL = {}
 MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL = {}
 
 LISTA_CPF_COM_COMPROVANTE = []
 LISTA_CPF_SEM_COMPROVANTE = []
+
+
+INCREMENTE_MAIS_UM = 1
 
 
 def iniciar_processamento():
@@ -33,14 +37,26 @@ def iniciar_processamento():
     logging.info(f'funcionarios COM comprovante: {len(LISTA_CPF_COM_COMPROVANTE)}')
     logging.warning(f'funcionarios SEM comprovante: {len(LISTA_CPF_SEM_COMPROVANTE)}')
 
-    gerar_relatorio_comprovante(MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL)
+    # gerar_relatorio_comprovante(MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL)
+
+    # resumo_filiais = montar_resumo_filiais()
+    # gerar_relatorio_resultado_processamento(resumo_filiais, MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL)
+
+
+def montar_resumo_filiais() -> List[ResumoFilial]:
+    lista_resumo_filiais = []
+
+    for codigo_filial in MAP_TOTAL_FUNCIONARIOS_POR_FILIAL:
+        print("")
+
+    return lista_resumo_filiais
 
 
 def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Funcionario],
                                             lista_arquivos_retorno_bancario: List[ArquivoRetorno]):
     for funcionario in funcionarios_liquido_folha:
         comprovante_encontrado = False
-
+        contabilizar_quantidade_funcionarios_por_filial(funcionario.descricao_filial)
         for arquivo_retorno in lista_arquivos_retorno_bancario:
             for detalhe in arquivo_retorno.lote.detalhe:
                 if funcionario.cpf in detalhe.segmento_b.numero_inscricao_favorecido:
@@ -92,3 +108,15 @@ def adicionar_funcionario_lista_funcionario_sem_comprovante_por_filial(funcionar
         MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL[codigo_filial] = [funcionario]
 
     LISTA_CPF_SEM_COMPROVANTE.append(funcionario.cpf)
+
+
+def contabilizar_quantidade_funcionarios_por_filial(nome_filial: str):
+    codigo_filial = nome_filial.split("-")[0]
+    if codigo_filial in MAP_TOTAL_FUNCIONARIOS_POR_FILIAL:
+        quantidade_funcionarios_filial = int(MAP_TOTAL_FUNCIONARIOS_POR_FILIAL[codigo_filial]["quantidade_funcionario"])
+        MAP_TOTAL_FUNCIONARIOS_POR_FILIAL[codigo_filial]["quantidade_funcionario"] = \
+            quantidade_funcionarios_filial + INCREMENTE_MAIS_UM
+    else:
+        MAP_TOTAL_FUNCIONARIOS_POR_FILIAL[codigo_filial] = {
+            "nome_filial": nome_filial, "quantidade_funcionario": INCREMENTE_MAIS_UM
+        }

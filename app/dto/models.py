@@ -140,3 +140,27 @@ class DetalheReportComprovante(BaseModel):
 
 class ReportComprovante(BaseModel):
     detalhe_report: List[DetalheReportComprovante]
+
+
+class DetalheReportResusltadoProcessamento(BaseModel):
+    data_atual: str
+    logo_cbm: str
+    filial: str
+    nome_funcionario: str
+    cpf: str
+    valor_a_pagar: str
+    total_funcionarios: str
+    total_com_comprovante: str
+    total_sem_comprovante: str
+
+
+class ReportResultadoProcessamento(BaseModel):
+    detalhe_report: List[DetalheReportResusltadoProcessamento]
+
+
+class ResumoFilial(BaseModel):
+    codigo_filial: str
+    nome_filial: str
+    total_funcionarios: int
+    total_funcionarios_com_comprovante: int
+    total_funcionarios_sem_comprovante: int
