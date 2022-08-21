@@ -56,7 +56,7 @@ Os dados devem ser separdos por **;** (ponto e virgula), o arquivo deve ser salv
 **na pastas, conter um unico arquivo**, sempre remova o anterior antes de adicionar o novo.
 
 #### Arquivo de Retorno do Banco
-Os arquivos de retorno do banco devem ser salvos na pasta **recurso/retorno_bancario**. Podem ser adicionados 
+Os arquivos de retorno do banco devem ser salvos na pasta **recurso/retorno_bancario** com a extensão **.ret**. Podem ser adicionados 
 quantos arquivos forem necessarios para gerar os comprovantes do mês atual.
 Antes de salvar os retornos do mês corrente, recomendamos a remoção de todos os arquivos de outros meses, evitando a 
 inconsistencia dos dados nos comprovantes gerados. 
