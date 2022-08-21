@@ -1,12 +1,12 @@
 import os
 import logging
-from typing import List
-from app.dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ResumoFilial
+from app.dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ReportResultadoProcessamento, \
+    DetalheReportResusltadoProcessamento
 from pyreportjasper import PyReportJasper
 from app.utils.utils import data_atual_formatada, formatar_cpf_funcionario
 from app.utils.exceptions import finalizar_programa_error
-from app.service.arquivo_service import criar_arquivo_datasource
-
+from app.service.arquivo_service import criar_arquivo_datasource_comprovante_pagamento, \
+    criar_arquivo_datasource_resultado_processamento
 
 RESOURCES_DIR = '../jasper_report/datasource/'
 REPORTS_DIR = '../jasper_report/report/'
@@ -31,16 +31,78 @@ def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
         data_nome_arquivo = data_atual_formatada()
         nome_arquivo_datasource = f'{codigo_filial}_comprovantes_pagamento_{data_nome_arquivo}'
 
-        criar_arquivo_datasource(nome_arquivo_datasource, comprovante_report)
+        criar_arquivo_datasource_comprovante_pagamento(nome_arquivo_datasource, comprovante_report)
         montar_parametros_para_gerar_relatorio_comprovante_pagamento(codigo_filial, data_geracao_arquivo_pagamento,
                                                                      nome_arquivo_datasource)
 
 
-def gerar_relatorio_resultado_processamento(resumo_filiais: List[ResumoFilial],
-                                            map_dados_funcionarios_sem_comprovante: dict):
-    print(resumo_filiais)
-    print(map_dados_funcionarios_sem_comprovante)
+def gerar_relatorio_resultado_processamento(total_funcionarios_por_filial: dict,
+                                            dados_funcionarios_com_comprovante_por_filial: dict,
+                                            dados_funcionarios_sem_comprovante_por_filial: dict):
     logging.info("Gerando relatorio com resultado do processamento")
+    relatorio_resultado_processamento = \
+        criar_report_resultado_processamento(total_funcionarios_por_filial,
+                                             dados_funcionarios_com_comprovante_por_filial,
+                                             dados_funcionarios_sem_comprovante_por_filial)
+
+    nome_datasource = f'DATASOURCE_RESULTADO_PROCESSAMENTO_{data_atual_formatada()}'
+    criar_arquivo_datasource_resultado_processamento(nome_datasource, relatorio_resultado_processamento)
+
+
+def criar_report_resultado_processamento(total_funcionarios_por_filial: dict,
+                                         dados_funcionarios_com_comprovante_por_filial: dict,
+                                         dados_funcionarios_sem_comprovante_por_filial: dict) -> ReportResultadoProcessamento:
+    lista_resultado_processamento = []
+    for codigo_filial in total_funcionarios_por_filial:
+        lista_funcionarios_sem_comprovante = []
+        total_funcionario_com_comprovante = 0
+        total_funcionario_sem_comprovante = 0
+
+        if codigo_filial in dados_funcionarios_com_comprovante_por_filial:
+            total_funcionario_com_comprovante = len(dados_funcionarios_com_comprovante_por_filial[codigo_filial])
+
+        if codigo_filial in dados_funcionarios_sem_comprovante_por_filial:
+            total_funcionario_sem_comprovante = len(dados_funcionarios_sem_comprovante_por_filial[codigo_filial])
+            lista_funcionarios_sem_comprovante = dados_funcionarios_sem_comprovante_por_filial[codigo_filial]
+
+        filial = total_funcionarios_por_filial[codigo_filial]
+
+        if len(lista_funcionarios_sem_comprovante) > 0:
+            for funcionario in lista_funcionarios_sem_comprovante:
+                cpf = formatar_cpf_funcionario(funcionario.cpf)
+                resultado_processamento_funcionario = gerar_detalhe_report_resultado_processamento(
+                    filial['nome_filial'], filial['quantidade_funcionario'], total_funcionario_com_comprovante,
+                    total_funcionario_sem_comprovante, funcionario.nome_completo, cpf, funcionario.src_total_verba
+                )
+
+                lista_resultado_processamento.append(resultado_processamento_funcionario)
+        else:
+            resultado_processamento_filial = gerar_detalhe_report_resultado_processamento(
+                filial['nome_filial'], filial['quantidade_funcionario'], total_funcionario_com_comprovante,
+                total_funcionario_sem_comprovante
+            )
+            lista_resultado_processamento.append(resultado_processamento_filial)
+
+    return ReportResultadoProcessamento(detalhe_report=lista_resultado_processamento)
+
+
+def gerar_detalhe_report_resultado_processamento(nome_filial: str,
+                                                 total_funcionarios_filial: int,
+                                                 total_funcionarios_com_comprovante: int,
+                                                 total_funcionarios_sem_comprovante: int, nome_funcionario: str = None,
+                                                 cpf: str = None,
+                                                 valor_a_pagar: str = None) -> DetalheReportResusltadoProcessamento:
+    return DetalheReportResusltadoProcessamento(
+        data_atual=data_atual_formatada('%d/%m/%Y'),
+        logo_cbm=os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_cbm.png')),
+        filial=nome_filial,
+        nome_funcionario=nome_funcionario,
+        cpf=cpf,
+        valor_a_pagar=valor_a_pagar,
+        total_funcionarios=total_funcionarios_filial,
+        total_com_comprovante=total_funcionarios_com_comprovante,
+        total_sem_comprovante=total_funcionarios_sem_comprovante
+    )
 
 
 def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> DetalheReportComprovante:
@@ -57,17 +119,17 @@ def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> D
     diretorio_completo_logo_bradesco = os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_bradesco.png'))
 
     return DetalheReportComprovante(
-            logo_bradesco=diretorio_completo_logo_bradesco,
-            data_emissao_relatorio=data_atual_formatada('%d/%m/%Y'),
-            nome_empresa_pagadora=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
-            nome_favorecido=funcionario.nome_completo.upper(),
-            cpf_favorecido=cpf,
-            agencia_pagamento=agencia_pagamento,
-            valor_pago=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.valor_pagamento_str,
-            numero_comprovante=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.nosso_numero,
-            data_pagamento=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.data_pagamento_str,
-            conta_pagamento=conta_pagamento
-        )
+        logo_bradesco=diretorio_completo_logo_bradesco,
+        data_emissao_relatorio=data_atual_formatada('%d/%m/%Y'),
+        nome_empresa_pagadora=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
+        nome_favorecido=funcionario.nome_completo.upper(),
+        cpf_favorecido=cpf,
+        agencia_pagamento=agencia_pagamento,
+        valor_pago=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.valor_pagamento_str,
+        numero_comprovante=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.nosso_numero,
+        data_pagamento=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.data_pagamento_str,
+        conta_pagamento=conta_pagamento
+    )
 
 
 def gerar_agencia_ou_conta_com_digito_verificador(agencia_ou_conta: str, digito_verificador: int) -> str:
@@ -102,7 +164,7 @@ def montar_parametros_para_gerar_relatorio_comprovante_pagamento(codigo_filial: 
         finalizar_programa_error(f'Erro ao tentar gerar PDF a partir do datasource {nome_datasource}. {error}')
 
 
-def montar_parametros_para_gerar_relatorio_resultado_processamento(codigo_filial: str, nome_datasource: str):
+def montar_parametros_para_gerar_relatorio_resultado_processamento(nome_datasource: str):
     try:
         input_file = os.path.join(REPORTS_DIR, 'relatorio_processamento_comprovante.jrxml')
         output_file = os.path.join(DIR_RELATORIO_RESULTADO_PROCESSAMENTO
@@ -116,7 +178,7 @@ def montar_parametros_para_gerar_relatorio_resultado_processamento(codigo_filial
             'csv_out_field_del': ',',
             'csv_record_del': "\n",
             'csv_first_row': True,
-            'csv_columns': list(DetalheReportComprovante.schema()["properties"].keys())
+            'csv_columns': list(DetalheReportResusltadoProcessamento.schema()["properties"].keys())
         }
 
         gerar_relatorio_jaspersoft(input_file, output_file, conn)

@@ -7,7 +7,8 @@ from typing import List
 from app.utils.exceptions import finalizar_programa_error
 from decimal import Decimal
 from app.dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
-    DetalheArquivo, TipoRegistro, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante
+    DetalheArquivo, TipoRegistro, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, \
+    ReportResultadoProcessamento, DetalheReportResusltadoProcessamento
 
 DIR_LIQUIDO_FOLHA = '../resources/entrada/liquido_folha/'
 DIR_RETORNO_BANCARIO = '../resources/entrada/retorno_bancario/'
@@ -189,7 +190,7 @@ def gerar_trailer_lote(registro: str) -> TrailerLote:
     )
 
 
-def criar_arquivo_datasource(nome_arquivo: str, comprovantes_pagamento_filial: ReportComprovante):
+def criar_arquivo_datasource_comprovante_pagamento(nome_arquivo: str, comprovantes_pagamento_filial: ReportComprovante):
     arquivo_datasource = os.path.join(DIR_DATASOURCE, f'{nome_arquivo}.csv')
     try:
         nome_atributos = list(DetalheReportComprovante.schema()["properties"].keys())
@@ -199,6 +200,21 @@ def criar_arquivo_datasource(nome_arquivo: str, comprovantes_pagamento_filial: R
             escritor.writeheader()
             for detalhe_report in comprovantes_pagamento_filial.detalhe_report:
                 escritor.writerow(json.loads(detalhe_report.json()))
+    except Exception as error:
+        finalizar_programa_error(f'Erro ao tentar gerar datasource {nome_arquivo}. {error}')
+
+
+def criar_arquivo_datasource_resultado_processamento(nome_arquivo: str,
+                                                     resultado_processamento: ReportResultadoProcessamento):
+    arquivo_datasource = os.path.join(DIR_DATASOURCE, f'{nome_arquivo}.csv')
+    try:
+        nome_atributos = list(DetalheReportResusltadoProcessamento.schema()["properties"].keys())
+
+        with open(arquivo_datasource, "w", encoding="utf-8") as datasource_csv:
+            escritor = csv.DictWriter(datasource_csv, fieldnames=nome_atributos)
+            escritor.writeheader()
+            for resultado in resultado_processamento.detalhe_report:
+                escritor.writerow(json.loads(resultado.json()))
     except Exception as error:
         finalizar_programa_error(f'Erro ao tentar gerar datasource {nome_arquivo}. {error}')
 

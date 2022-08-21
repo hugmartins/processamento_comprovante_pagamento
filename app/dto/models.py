@@ -146,9 +146,9 @@ class DetalheReportResusltadoProcessamento(BaseModel):
     data_atual: str
     logo_cbm: str
     filial: str
-    nome_funcionario: str
-    cpf: str
-    valor_a_pagar: str
+    nome_funcionario: Optional[str] = None
+    cpf: Optional[str] = None
+    valor_a_pagar: Optional[str] = None
     total_funcionarios: str
     total_com_comprovante: str
     total_sem_comprovante: str
@@ -156,11 +156,3 @@ class DetalheReportResusltadoProcessamento(BaseModel):
 
 class ReportResultadoProcessamento(BaseModel):
     detalhe_report: List[DetalheReportResusltadoProcessamento]
-
-
-class ResumoFilial(BaseModel):
-    codigo_filial: str
-    nome_filial: str
-    total_funcionarios: int
-    total_funcionarios_com_comprovante: int
-    total_funcionarios_sem_comprovante: int

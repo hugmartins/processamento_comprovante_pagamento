@@ -2,7 +2,7 @@ import logging
 from typing import List
 from app.utils.exceptions import finalizar_programa_error
 from app.utils.utils import formatar_data_str
-from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario, ResumoFilial
+from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario
 from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, excluir_datasources_existentes
 from app.service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento
@@ -39,17 +39,8 @@ def iniciar_processamento():
 
     # gerar_relatorio_comprovante(MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL)
 
-    # resumo_filiais = montar_resumo_filiais()
-    # gerar_relatorio_resultado_processamento(resumo_filiais, MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL)
-
-
-def montar_resumo_filiais() -> List[ResumoFilial]:
-    lista_resumo_filiais = []
-
-    for codigo_filial in MAP_TOTAL_FUNCIONARIOS_POR_FILIAL:
-        print("")
-
-    return lista_resumo_filiais
+    gerar_relatorio_resultado_processamento(MAP_TOTAL_FUNCIONARIOS_POR_FILIAL, MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL,
+                                            MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL)
 
 
 def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Funcionario],
