@@ -58,7 +58,7 @@ def carregar_lista_funcionarios_liquido_folha() -> List[Funcionario]:
                         agencia_salario=linha[4],
                         conta_salario=linha[5],
                         banco=linha[6],
-                        src_total_verba=Decimal(linha[7].replace(".", "").replace(",", "."))
+                        src_total_verba=linha[7].replace(".", "")
                     )
 
                     lista_funcionarios_liquido_folha.append(funcionario)

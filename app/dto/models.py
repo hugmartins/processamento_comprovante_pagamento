@@ -121,7 +121,7 @@ class Funcionario(BaseModel):
     agencia_salario: Optional[str] = None
     conta_salario: Optional[str] = None
     banco: str = Field(title="Banco Recebedor", example="BRADESCO")
-    src_total_verba: Decimal = Field(title="Valor Pagamento", example="1.000,10")
+    src_total_verba: str = Field(title="Valor Pagamento", example="1000,10")
     dados_comprovante: ComprovantePagamentoFuncionario = Field(title="Dados comprovante pagamento", default=None)
 
 
