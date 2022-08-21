@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List
 from decimal import Decimal
 from enum import Enum
-from app.utils.utils import formatar_data_str, formatar_valor_pagamento
+from utils.utils import formatar_data_str, formatar_valor_pagamento
 
 
 class TipoRegistro(Enum):

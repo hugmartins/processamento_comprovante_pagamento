@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from app.service.processamento_service import iniciar_processamento
+from service.processamento_service import iniciar_processamento
 
 
 def configurar_log():
@@ -13,7 +13,7 @@ def configurar_log():
     )
 
 
-if __name__ == '__main__':
+def iniciar_processamento_comprovantes_pagamento():
     configurar_log()
 
     data_inicio_execucao = datetime.now()
@@ -24,3 +24,7 @@ if __name__ == '__main__':
 
     durancao_processamento = data_fim_execucao - data_inicio_execucao
     logging.info(f'Duração processamento: {durancao_processamento}')
+
+
+iniciar_processamento_comprovantes_pagamento()
+

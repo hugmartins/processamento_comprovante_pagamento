@@ -3,10 +3,10 @@ import os.path
 import csv
 import json
 from typing import List
-
-from app.utils.exceptions import finalizar_programa_error
 from decimal import Decimal
-from app.dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
+
+from utils.exceptions import finalizar_programa_error
+from dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
     DetalheArquivo, TipoRegistro, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, \
     ReportResultadoProcessamento, DetalheReportResusltadoProcessamento
 
