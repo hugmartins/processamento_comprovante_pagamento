@@ -142,7 +142,7 @@ class ReportComprovante(BaseModel):
     detalhe_report: List[DetalheReportComprovante]
 
 
-class DetalheReportResusltadoProcessamento(BaseModel):
+class DetalheReportResultadoProcessamento(BaseModel):
     data_atual: str
     logo_cbm: str
     filial: str
@@ -155,4 +155,4 @@ class DetalheReportResusltadoProcessamento(BaseModel):
 
 
 class ReportResultadoProcessamento(BaseModel):
-    detalhe_report: List[DetalheReportResusltadoProcessamento]
+    detalhe_report: List[DetalheReportResultadoProcessamento]

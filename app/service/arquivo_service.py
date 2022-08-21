@@ -8,10 +8,10 @@ from decimal import Decimal
 from utils.exceptions import finalizar_programa_error
 from dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
     DetalheArquivo, TipoRegistro, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, \
-    ReportResultadoProcessamento, DetalheReportResusltadoProcessamento
+    ReportResultadoProcessamento, DetalheReportResultadoProcessamento
 
-DIR_LIQUIDO_FOLHA = '../resources/entrada/liquido_folha/'
-DIR_RETORNO_BANCARIO = '../resources/entrada/retorno_bancario/'
+DIR_LIQUIDO_FOLHA = '../recursos/liquido_folha/'
+DIR_RETORNO_BANCARIO = '../recursos/retorno_bancario/'
 DIR_DATASOURCE = '../jasper_report/datasource/'
 
 
@@ -208,7 +208,7 @@ def criar_arquivo_datasource_resultado_processamento(nome_arquivo: str,
                                                      resultado_processamento: ReportResultadoProcessamento):
     arquivo_datasource = os.path.join(DIR_DATASOURCE, f'{nome_arquivo}.csv')
     try:
-        nome_atributos = list(DetalheReportResusltadoProcessamento.schema()["properties"].keys())
+        nome_atributos = list(DetalheReportResultadoProcessamento.schema()["properties"].keys())
 
         with open(arquivo_datasource, "w", encoding="utf-8") as datasource_csv:
             escritor = csv.DictWriter(datasource_csv, fieldnames=nome_atributos)

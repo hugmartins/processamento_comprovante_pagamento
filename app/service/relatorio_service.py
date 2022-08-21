@@ -3,7 +3,7 @@ import logging
 from pyreportjasper import PyReportJasper
 
 from dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ReportResultadoProcessamento, \
-    DetalheReportResusltadoProcessamento
+    DetalheReportResultadoProcessamento
 from utils.utils import data_atual_formatada, formatar_cpf_funcionario
 from utils.exceptions import finalizar_programa_error
 from service.arquivo_service import criar_arquivo_datasource_comprovante_pagamento, \
@@ -11,8 +11,8 @@ from service.arquivo_service import criar_arquivo_datasource_comprovante_pagamen
 
 RESOURCES_DIR = '../jasper_report/datasource/'
 REPORTS_DIR = '../jasper_report/report/'
-DIR_COMPROVANTE_POR_FILIAL = '../resources/saida/comprovantes/'
-DIR_RELATORIO_RESULTADO_PROCESSAMENTO = '../resources/saida/relatorio_processamento/'
+DIR_COMPROVANTE_POR_FILIAL = '../output/comprovantes/'
+DIR_RELATORIO_RESULTADO_PROCESSAMENTO = '../output/relatorio_processamento/'
 DIR_IMG_REPORT = '../jasper_report/img/'
 
 
@@ -96,8 +96,8 @@ def gerar_detalhe_report_resultado_processamento(nome_filial: str,
                                                  total_funcionarios_com_comprovante: int,
                                                  total_funcionarios_sem_comprovante: int, nome_funcionario: str = None,
                                                  cpf: str = None,
-                                                 valor_a_pagar: str = None) -> DetalheReportResusltadoProcessamento:
-    return DetalheReportResusltadoProcessamento(
+                                                 valor_a_pagar: str = None) -> DetalheReportResultadoProcessamento:
+    return DetalheReportResultadoProcessamento(
         data_atual=data_atual_formatada('%d/%m/%Y'),
         logo_cbm=os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_cbm.png')),
         filial=nome_filial,
@@ -164,7 +164,7 @@ def montar_parametros_para_gerar_relatorio_resultado_processamento(nome_datasour
         input_file = os.path.join(REPORTS_DIR, 'relatorio_processamento_comprovante.jrxml')
         output_file = os.path.join(DIR_RELATORIO_RESULTADO_PROCESSAMENTO
                                    , f'RESULTADO_PROCESSAMENTO_{data_atual_formatada("%d_%m_%Y_%H%M%S")}')
-        nome_colunas_csv = list(DetalheReportResusltadoProcessamento.schema()["properties"].keys())
+        nome_colunas_csv = list(DetalheReportResultadoProcessamento.schema()["properties"].keys())
 
         gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv)
 
