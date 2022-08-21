@@ -61,7 +61,7 @@ def criar_report_resultado_processamento(total_funcionarios_por_filial: dict,
         total_funcionario_sem_comprovante = 0
 
         if codigo_filial in dados_funcionarios_com_comprovante_por_filial:
-            total_funcionario_com_comprovante = len(dados_funcionarios_com_comprovante_por_filial[codigo_filial])
+            total_funcionario_com_comprovante = dados_funcionarios_com_comprovante_por_filial[codigo_filial]
 
         if codigo_filial in dados_funcionarios_sem_comprovante_por_filial:
             total_funcionario_sem_comprovante = len(dados_funcionarios_sem_comprovante_por_filial[codigo_filial])

@@ -8,7 +8,7 @@ from app.service.arquivo_service import validar_diretorio_liquido_folha, validar
 from app.service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento
 
 MAP_TOTAL_FUNCIONARIOS_POR_FILIAL = {}
-MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL = {}
+MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL = {}
 MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL = {}
 
 LISTA_CPF_COM_COMPROVANTE = []
@@ -37,10 +37,20 @@ def iniciar_processamento():
     logging.info(f'funcionarios COM comprovante: {len(LISTA_CPF_COM_COMPROVANTE)}')
     logging.warning(f'funcionarios SEM comprovante: {len(LISTA_CPF_SEM_COMPROVANTE)}')
 
-    gerar_relatorio_comprovante(MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL)
+    gerar_relatorio_comprovante(MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL)
 
-    gerar_relatorio_resultado_processamento(MAP_TOTAL_FUNCIONARIOS_POR_FILIAL, MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL,
+    map_quantidade_comprovantes_por_filial = transformar_map_funcionarios_com_comprovante_por_filial()
+    gerar_relatorio_resultado_processamento(MAP_TOTAL_FUNCIONARIOS_POR_FILIAL, map_quantidade_comprovantes_por_filial,
                                             MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL)
+
+
+def transformar_map_funcionarios_com_comprovante_por_filial() -> dict:
+    map_quantidade_comprovantes_por_filial = {}
+    for codigo_filial in MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL:
+        lista_funcionarios = MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL[codigo_filial]
+        map_quantidade_comprovantes_por_filial[codigo_filial] = len(lista_funcionarios)
+
+    return map_quantidade_comprovantes_por_filial
 
 
 def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Funcionario],
@@ -78,12 +88,12 @@ def validar_arquivos_existentes():
 def adicionar_funcionario_lista_funcionario_comprovante_por_filial(funcionario: Funcionario):
     codigo_filial = funcionario.descricao_filial.split("-")[0]
 
-    if codigo_filial in MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL:
-        lista_funcionarios_filial = MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL[codigo_filial]
+    if codigo_filial in MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL:
+        lista_funcionarios_filial = MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL[codigo_filial]
         lista_funcionarios_filial.append(funcionario)
-        MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL[codigo_filial] = lista_funcionarios_filial
+        MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL[codigo_filial] = lista_funcionarios_filial
     else:
-        MAP_COMPROVANTE_FUNCIONARIO_POR_FILIAL[codigo_filial] = [funcionario]
+        MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL[codigo_filial] = [funcionario]
 
     LISTA_CPF_COM_COMPROVANTE.append(funcionario.cpf)
 
