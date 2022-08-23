@@ -3,7 +3,6 @@ import os.path
 import csv
 import json
 from typing import List
-from decimal import Decimal
 
 from utils.exceptions import finalizar_programa_error
 from dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
@@ -106,7 +105,8 @@ def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str]) -> Arquivo
 
         if tipo_registro == TipoRegistro.HEADER_ARQUIVO.value[0]:
             header_arquivo = gerar_header_arquivo(registro)
-        elif tipo_registro == TipoRegistro.DETALHE.value[0] and registro[13:14] == "A":
+        elif tipo_registro == TipoRegistro.DETALHE.value[0] and registro[13:14] == "A" \
+                and validar_ocorrencia_credito_debito_efetivado(registro):
 
             segmento_a = gerar_segmento_a(registro)
             index_segmento_b = (dados_retorno_bancario.index(registro) + 1)
@@ -127,6 +127,11 @@ def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str]) -> Arquivo
         trailer_arquivo=trailer_arquivo
 
     )
+
+
+def validar_ocorrencia_credito_debito_efetivado(registro: str):
+    codigos_ocorrencia = registro[230:240]
+    return '00' in codigos_ocorrencia
 
 
 def gerar_header_arquivo(registro: str) -> HeaderArquivo:
