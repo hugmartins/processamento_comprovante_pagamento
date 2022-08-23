@@ -21,6 +21,7 @@ INCREMENTE_MAIS_UM = 1
 def iniciar_processamento():
     validar_arquivos_existentes()
     excluir_datasources_existentes()
+
     funcionarios_liquido_folha = carregar_lista_funcionarios_liquido_folha()
     lista_arquivos_retorno_bancario = carregar_retornos_bancario()
 

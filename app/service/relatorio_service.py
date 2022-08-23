@@ -98,8 +98,6 @@ def gerar_detalhe_report_resultado_processamento(nome_filial: str,
                                                  cpf: str = None,
                                                  valor_a_pagar: str = None) -> DetalheReportResultadoProcessamento:
     return DetalheReportResultadoProcessamento(
-        data_atual=data_atual_formatada('%d/%m/%Y'),
-        logo_cbm=os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_cbm.png')),
         filial=nome_filial,
         nome_funcionario=nome_funcionario,
         cpf=cpf,
@@ -121,11 +119,7 @@ def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> D
         int(funcionario.dados_comprovante.detalhe_comprovante.segmento_a.digito_verificador_conta)
     )
 
-    diretorio_completo_logo_bradesco = os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_bradesco.png'))
-
     return DetalheReportComprovante(
-        logo_bradesco=diretorio_completo_logo_bradesco,
-        data_emissao_relatorio=data_atual_formatada('%d/%m/%Y'),
         nome_empresa_pagadora=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
         nome_favorecido=funcionario.nome_completo.upper(),
         cpf_favorecido=cpf,
@@ -151,8 +145,11 @@ def montar_parametros_para_gerar_relatorio_comprovante_pagamento(codigo_filial: 
         output_file = os.path.join(DIR_COMPROVANTE_POR_FILIAL
                                    , f'{codigo_filial} - {data_geracao_arquivo} - COMPROVANTES FOLPAG BRADESCO')
         nome_colunas_csv = list(DetalheReportComprovante.schema()["properties"].keys())
-
-        gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv)
+        parametros = {
+            "logo_bradesco": os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_bradesco.png')),
+            "data_emissao_relatorio": data_atual_formatada('%d/%m/%Y')
+        }
+        gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv, parametros)
 
         logging.info(f'Comprovantes da filial {codigo_filial} gerados com sucesso. {output_file}.pdf')
     except Exception as error:
@@ -164,17 +161,21 @@ def montar_parametros_para_gerar_relatorio_resultado_processamento(nome_datasour
         input_file = os.path.join(REPORTS_DIR, 'relatorio_processamento_comprovante.jrxml')
         output_file = os.path.join(DIR_RELATORIO_RESULTADO_PROCESSAMENTO
                                    , f'RESULTADO_PROCESSAMENTO_{data_atual_formatada("%d_%m_%Y_%H%M%S")}')
-        nome_colunas_csv = list(DetalheReportResultadoProcessamento.schema()["properties"].keys())
 
-        gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv)
+        nome_colunas_csv = list(DetalheReportResultadoProcessamento.schema()["properties"].keys())
+        parametros = {
+            "logo_cbm": os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_cbm.png')),
+            "data_atual": data_atual_formatada('%d/%m/%Y')
+        }
+        gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv, parametros)
 
         logging.info(f'Relatorio com resultado do processamento gerado com sucesso. {output_file}.pdf')
     except Exception as error:
         finalizar_programa_error(f'Erro ao tentar gerar PDF a partir do datasource {nome_datasource}. {error}')
 
 
-def gerar_relatorio_jaspersoft(input_file: str, output_file: str, nome_datasource: str, nome_colunas_csv: list):
-
+def gerar_relatorio_jaspersoft(input_file: str, output_file: str, nome_datasource: str, nome_colunas_csv: list,
+                               parametros: dict):
     conn = {
         'driver': 'csv',
         'data_file': os.path.abspath(os.path.join(RESOURCES_DIR, f'{nome_datasource}.csv')),
@@ -192,6 +193,7 @@ def gerar_relatorio_jaspersoft(input_file: str, output_file: str, nome_datasourc
         input_file,
         output_file,
         output_formats=["pdf"],
+        parameters=parametros,
         db_connection=conn
     )
     pyreportjasper.process_report()

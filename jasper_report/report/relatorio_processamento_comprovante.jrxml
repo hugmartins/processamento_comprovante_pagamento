@@ -5,11 +5,11 @@
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="100"/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="895"/>
+	<parameter name="logo_cbm" class="java.lang.String"/>
+	<parameter name="data_atual" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="data_atual" class="java.lang.String"/>
-	<field name="logo_cbm" class="java.lang.String"/>
 	<field name="filial" class="java.lang.String"/>
 	<field name="nome_funcionario" class="java.lang.String"/>
 	<field name="cpf" class="java.lang.String"/>
@@ -155,7 +155,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{data_atual}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{data_atual}]]></textFieldExpression>
 			</textField>
 			<image>
 				<reportElement mode="Transparent" x="1" y="3" width="100" height="36" uuid="0fd58bc9-cf12-4907-a384-008cd7270bfa">
@@ -163,7 +163,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<graphicElement fill="Solid"/>
-				<imageExpression><![CDATA[$F{logo_cbm}]]></imageExpression>
+				<imageExpression><![CDATA[$P{logo_cbm}]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="90" y="4" width="448" height="30" uuid="2dff4313-c051-4a00-9516-bc0a82bbb1f9"/>

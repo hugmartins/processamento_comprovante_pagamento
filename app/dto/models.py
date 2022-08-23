@@ -126,8 +126,6 @@ class Funcionario(BaseModel):
 
 
 class DetalheReportComprovante(BaseModel):
-    logo_bradesco: str
-    data_emissao_relatorio: str
     nome_empresa_pagadora: str
     nome_favorecido: str
     cpf_favorecido: str
@@ -143,8 +141,6 @@ class ReportComprovante(BaseModel):
 
 
 class DetalheReportResultadoProcessamento(BaseModel):
-    data_atual: str
-    logo_cbm: str
     filial: str
     nome_funcionario: Optional[str] = None
     cpf: Optional[str] = None

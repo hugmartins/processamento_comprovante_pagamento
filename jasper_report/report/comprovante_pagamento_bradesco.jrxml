@@ -11,17 +11,11 @@
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="comprovante_pagamento\datasources\DataAdapterComprovanteCSV.jrdax"/>
+	<parameter name="logo_bradesco" class="java.lang.String"/>
+	<parameter name="data_emissao_relatorio" class="java.lang.String"/>
 	<queryString language="csv">
 		<![CDATA[detalhe_report.logo_bradesco]]>
 	</queryString>
-	<field name="logo_bradesco" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.logo_bradesco"/>
-		<fieldDescription><![CDATA[detalhe_report.logo_bradesco]]></fieldDescription>
-	</field>
-	<field name="data_emissao_relatorio" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.data_emissao_relatorio"/>
-		<fieldDescription><![CDATA[detalhe_report.data_emissao_relatorio]]></fieldDescription>
-	</field>
 	<field name="nome_empresa_pagadora" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="detalhe_report.nome_empresa_pagadora"/>
 		<fieldDescription><![CDATA[detalhe_report.nome_empresa_pagadora]]></fieldDescription>
@@ -61,7 +55,7 @@
 		<band height="110" splitType="Stretch">
 			<image onErrorType="Blank">
 				<reportElement x="500" y="10" width="50" height="62" uuid="8d7da921-d869-47fd-8e5d-68a9c5777067"/>
-				<imageExpression><![CDATA[$F{logo_bradesco}]]></imageExpression>
+				<imageExpression><![CDATA[$P{logo_bradesco}]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="10" y="10" width="480" height="32" uuid="9f199213-fb92-4614-b573-1b5d60db043d"/>
@@ -82,7 +76,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{data_emissao_relatorio}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{data_emissao_relatorio}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="179" y="80" width="332" height="30" uuid="156d92d8-4bfc-4e83-a17a-9fbcdaa294ff"/>
