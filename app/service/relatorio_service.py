@@ -1,6 +1,7 @@
 import os
 import logging
 from pyreportjasper import PyReportJasper
+from operator import attrgetter
 
 from dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ReportResultadoProcessamento, \
     DetalheReportResultadoProcessamento
@@ -28,7 +29,10 @@ def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
             detalhe_comprovante_report = converter_funcionario_para_report_comprovante(funcionario_filial)
             lista_report_comprovante.append(detalhe_comprovante_report)
 
-        comprovante_report = ReportComprovante(detalhe_report=lista_report_comprovante)
+        comprovante_report = ReportComprovante(
+            detalhe_report=sorted(lista_report_comprovante, key=attrgetter('nome_favorecido'))
+        )
+
         data_nome_arquivo = data_atual_formatada()
         nome_arquivo_datasource = f'{codigo_filial}_comprovantes_pagamento_{data_nome_arquivo}'
 
@@ -73,7 +77,8 @@ def criar_report_resultado_processamento(total_funcionarios_por_filial: dict,
         quantidade_funcionarios_filial = filial['quantidade_funcionario']
 
         if len(lista_funcionarios_sem_comprovante) > 0:
-            for funcionario in lista_funcionarios_sem_comprovante:
+            lista_funcionarios_ordenada = sorted(lista_funcionarios_sem_comprovante, key=attrgetter('nome_completo'))
+            for funcionario in lista_funcionarios_ordenada:
                 cpf = formatar_cpf_funcionario(funcionario.cpf)
                 resultado_processamento_funcionario = gerar_detalhe_report_resultado_processamento(
                     nome_filial, quantidade_funcionarios_filial, total_funcionario_com_comprovante,
