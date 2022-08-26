@@ -24,6 +24,11 @@ class HeaderArquivo(BaseModel):
         return formatar_data_str(v, '%d%m%Y', '%d/%m/%Y')
 
 
+class OcorrenciaPagamento(BaseModel):
+    codigo_ocorrencia: str
+    descricao_ocorrencia: str
+
+
 class SegmentoA(BaseModel):
     tipo_registro: int
     codigo_segmento: str = Field(description="A ou B para retorno")
@@ -40,7 +45,7 @@ class SegmentoA(BaseModel):
     nosso_numero: str
     data_real_efetivacao_pagamento_str: str
     valor_real_efetivacao_pagamento_str: str
-    codigo_ocorrencias: Optional[str] = None
+    ocorrencia: Optional[List[OcorrenciaPagamento]] = []
 
     @validator('data_pagamento_str')
     def formatar_data_geracao_arquivo(cls, v):

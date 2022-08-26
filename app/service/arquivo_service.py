@@ -7,8 +7,8 @@ from typing import List
 from utils.exceptions import finalizar_programa_error
 from dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
     DetalheArquivo, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, \
-    ReportResultadoProcessamento, DetalheReportResultadoProcessamento
-from dto.enums import TipoRegistro, TipoArquivoProcessamento
+    ReportResultadoProcessamento, DetalheReportResultadoProcessamento, OcorrenciaPagamento
+from dto.enums import TipoRegistro, TipoArquivoProcessamento, TiposOcorrenciasPagamento
 
 DIR_LIQUIDO_FOLHA = '../recursos/liquido_folha/'
 DIR_RETORNO_FOLPAG = '../recursos/retorno_comprovante_folpag/'
@@ -23,9 +23,15 @@ def validar_diretorio_liquido_folha():
 
 
 def validar_diretorio_retorno_folha_pagamento():
-    lista_arquivos_liquido_folha = os.listdir(DIR_RETORNO_FOLPAG)
-    if len(lista_arquivos_liquido_folha) <= 0:
+    lista_arquivos = os.listdir(DIR_RETORNO_FOLPAG)
+    if len(lista_arquivos) == 0:
         finalizar_programa_error(f'Nao foram encontrados retornos bancarios para processar os comprovantes.')
+
+
+def validar_diretorio_retorno_previa_pagamento():
+    lista_arquivos = os.listdir(DIR_RETORNO_PREVIA_PAGAMENTO)
+    if len(lista_arquivos) == 0:
+        finalizar_programa_error(f'Nao foram encontrados arquivos para verificar inconsistencias no pagamento.')
 
 
 def validar_arquivo_existe(endereco_arquivo: str):
@@ -124,7 +130,7 @@ def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str],
         elif tipo_registro == TipoRegistro.DETALHE.value[0] and registro[13:14] == "A" \
                 and validar_ocorrencia(registro, tipo_arquivo_processamto):
 
-            segmento_a = gerar_segmento_a(registro)
+            segmento_a = gerar_segmento_a(registro, tipo_arquivo_processamto)
             index_segmento_b = (dados_retorno_bancario.index(registro) + 1)
             registro_segmento_b = dados_retorno_bancario[index_segmento_b]
             segmento_b = None
@@ -177,7 +183,45 @@ def gerar_trailer_arquivo(registro: str) -> TrailerArquivo:
     )
 
 
-def gerar_segmento_a(registro: str) -> SegmentoA:
+def gerar_classe_ocorrencia_pagamento(tipo_ocorrencia_pagamento: TiposOcorrenciasPagamento) -> OcorrenciaPagamento:
+    codigo_op = tipo_ocorrencia_pagamento.value[0]
+    descricao_op = tipo_ocorrencia_pagamento.value[1]
+    return OcorrenciaPagamento(codigo_ocorrencia=codigo_op, descricao_ocorrencia=descricao_op)
+
+
+# Pode ser informado ATE 5 ocorrencias simultaneamente, cada uma delas condificada com dois digitos
+# informacao retirada do layout multipag BRADESCO - 18/07/2018
+def gerar_ocorrencias_pagamento(ocorrencias: str) -> List[OcorrenciaPagamento]:
+    lista_ocorrencias = []
+
+    ocorrencia_1 = ocorrencias[0:2].strip()
+    ocorrencia_2 = ocorrencias[2:4].strip()
+    ocorrencia_3 = ocorrencias[4:6].strip()
+    ocorrencia_4 = ocorrencias[6:8].strip()
+    ocorrencia_5 = ocorrencias[8:10].strip()
+
+    for op in TiposOcorrenciasPagamento:
+        codigo_ocorrencia = op.value[0]
+        if codigo_ocorrencia == ocorrencia_1:
+            lista_ocorrencias.append(gerar_classe_ocorrencia_pagamento(op))
+        if codigo_ocorrencia == ocorrencia_2:
+            lista_ocorrencias.append(gerar_classe_ocorrencia_pagamento(op))
+        if codigo_ocorrencia == ocorrencia_3:
+            lista_ocorrencias.append(gerar_classe_ocorrencia_pagamento(op))
+        if codigo_ocorrencia == ocorrencia_4:
+            lista_ocorrencias.append(gerar_classe_ocorrencia_pagamento(op))
+        if codigo_ocorrencia == ocorrencia_5:
+            lista_ocorrencias.append(gerar_classe_ocorrencia_pagamento(op))
+
+    return lista_ocorrencias
+
+
+def gerar_segmento_a(registro: str, tipo_arquivo_processamto: TipoArquivoProcessamento) -> SegmentoA:
+
+    ocorrencias = []
+    if tipo_arquivo_processamto == TipoArquivoProcessamento.PREVIA_PAGAMENTO:
+        ocorrencias = gerar_ocorrencias_pagamento(registro[230:240])
+
     return SegmentoA(
         tipo_registro=int(registro[7:8]),
         codigo_segmento=registro[13:14],
@@ -194,7 +238,7 @@ def gerar_segmento_a(registro: str) -> SegmentoA:
         nosso_numero=registro[134:154],
         data_real_efetivacao_pagamento_str=registro[154:162],
         valor_real_efetivacao_pagamento_str=registro[162:177],
-        codigo_ocorrencias=registro[230:240]
+        ocorrencia=ocorrencias
     )
 
 

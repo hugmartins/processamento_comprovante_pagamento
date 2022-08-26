@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import List
 from utils.exceptions import finalizar_programa_error
@@ -5,7 +6,7 @@ from utils.utils import formatar_data_str
 from dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario
 from dto.enums import TipoArquivoProcessamento
 from service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_folha_pagamento, \
-    carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario
+    carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, validar_diretorio_retorno_previa_pagamento
 from service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento
 
 MAP_TOTAL_FUNCIONARIOS_POR_FILIAL = {}
@@ -36,12 +37,22 @@ def switch_processamento(opcao_processamento: int, funcionarios_liquido_folha: L
     if opcao_processamento == TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO.value:
         processar_comprovante_pagamento(funcionarios_liquido_folha)
     elif opcao_processamento == TipoArquivoProcessamento.PREVIA_PAGAMENTO.value:
-        processar_previa_pagamento()
+        processar_previa_pagamento(funcionarios_liquido_folha)
 
 
-def processar_previa_pagamento():
-    # TODO: desenvolver o processamento dos arquivos de previa pagamento
-    finalizar_programa_error('Modulo em desenvolvimento. Aguarde...')
+def processar_previa_pagamento(funcionarios_liquido_folha: List[Funcionario]):
+    validar_diretorio_retorno_previa_pagamento()
+    lista_arquivos_previa_pagamento = carregar_retornos_bancario(TipoArquivoProcessamento.PREVIA_PAGAMENTO)
+
+    if len(lista_arquivos_previa_pagamento) > 0:
+        logging.info(f'Retornos previa pagamentos carregados com sucesso! '
+                     f'Total arquivos de retorno: {len(lista_arquivos_previa_pagamento)}')
+    else:
+        finalizar_programa_error('Nenhum dado encontrado no retorno previa pagamento, favor verificar!')
+
+    # localizar_dados_comprovante_funcionario(funcionarios_liquido_folha, lista_arquivos_previa_pagamento)
+
+    print(json.dumps(lista_arquivos_previa_pagamento, default=lambda o: o.__dict__,))
 
 
 def processar_comprovante_pagamento(funcionarios_liquido_folha: List[Funcionario]):
@@ -49,7 +60,7 @@ def processar_comprovante_pagamento(funcionarios_liquido_folha: List[Funcionario
     lista_arquivos_retorno_bancario = carregar_retornos_bancario(TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO)
 
     if len(lista_arquivos_retorno_bancario) > 0:
-        logging.info(f'Retorno comprovante pagamento carregados com sucesso! '
+        logging.info(f'Retornos comprovante pagamento carregados com sucesso! '
                      f'Total arquivos de retorno: {len(lista_arquivos_retorno_bancario)}')
     else:
         finalizar_programa_error('Nenhum dado encontrado no retorno comprovante pagamento, favor verificar!')
