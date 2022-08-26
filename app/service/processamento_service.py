@@ -3,13 +3,15 @@ from typing import List
 from utils.exceptions import finalizar_programa_error
 from utils.utils import formatar_data_str
 from dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario
-from service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_bancario, \
-    carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, excluir_datasources_existentes
+from dto.enums import TipoArquivoProcessamento
+from service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_folha_pagamento, \
+    carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario
 from service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento
 
 MAP_TOTAL_FUNCIONARIOS_POR_FILIAL = {}
 MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL = {}
 MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL = {}
+MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL = {}
 
 LISTA_CPF_COM_COMPROVANTE = []
 LISTA_CPF_SEM_COMPROVANTE = []
@@ -18,20 +20,35 @@ LISTA_CPF_SEM_COMPROVANTE = []
 INCREMENTE_MAIS_UM = 1
 
 
-def iniciar_processamento():
-    validar_arquivos_existentes()
-    excluir_datasources_existentes()
-
+def iniciar_processamento(opcao_processamento: int):
+    validar_diretorio_liquido_folha()
     funcionarios_liquido_folha = carregar_lista_funcionarios_liquido_folha()
-    lista_arquivos_retorno_bancario = carregar_retornos_bancario()
 
-    logging.info(f'Total funcionarios liquido folha: {len(funcionarios_liquido_folha)}')
-    logging.info(f'Total arquivos de retorno bancario: {len(lista_arquivos_retorno_bancario)}')
-
-    if len(funcionarios_liquido_folha) > 0 < len(lista_arquivos_retorno_bancario):
-        logging.info('Liquido Folha e Retorno bancario carregados com sucesso!')
+    if len(funcionarios_liquido_folha) > 0:
+        logging.info(f'Liquido Folha com sucesso! Total funcionarios: {len(funcionarios_liquido_folha)}')
     else:
-        finalizar_programa_error('Nenhum dado encontrado no Liquido Folha e/ou Retorno bancario, favor verificar!')
+        finalizar_programa_error('Nenhum dado encontrado no Liquido Folha, favor verificar!')
+
+    if opcao_processamento == TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO.value:
+        processar_comprovante_pagamento(funcionarios_liquido_folha)
+    elif opcao_processamento == TipoArquivoProcessamento.PREVIA_PAGAMENTO.value:
+        processar_previa_pagamento()
+
+
+def processar_previa_pagamento():
+    # TODO: desenvolver o processamento dos arquivos de previa pagamento
+    print('')
+
+
+def processar_comprovante_pagamento(funcionarios_liquido_folha: List[Funcionario]):
+    validar_diretorio_retorno_folha_pagamento()
+    lista_arquivos_retorno_bancario = carregar_retornos_bancario(TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO)
+
+    if len(lista_arquivos_retorno_bancario) > 0:
+        logging.info(f'Retorno comprovante pagamento carregados com sucesso! '
+                     f'Total arquivos de retorno: {len(lista_arquivos_retorno_bancario)}')
+    else:
+        finalizar_programa_error('Nenhum dado encontrado no retorno comprovante pagamento, favor verificar!')
 
     localizar_dados_comprovante_funcionario(funcionarios_liquido_folha, lista_arquivos_retorno_bancario)
 
@@ -79,11 +96,6 @@ def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Fun
 
         if comprovante_encontrado is False:
             adicionar_funcionario_lista_funcionario_sem_comprovante_por_filial(funcionario)
-
-
-def validar_arquivos_existentes():
-    validar_diretorio_liquido_folha()
-    validar_diretorio_retorno_bancario()
 
 
 def adicionar_funcionario_lista_funcionario_comprovante_por_filial(funcionario: Funcionario):

@@ -1,18 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List
-from decimal import Decimal
-from enum import Enum
 from utils.utils import formatar_data_str, formatar_valor_pagamento
-
-
-class TipoRegistro(Enum):
-    HEADER_ARQUIVO = 0, "Header de Arquivo"
-    HEADER_LOTE = 1, "Header de Lote"
-    REGIS_INIC_LOTE = 2, "Registros Iniciais do Lote"
-    DETALHE = 3, "Detalhe"
-    REGIS_FINAL_LOTE = 4, "Registros Finais do Lote"
-    TRAILER_LOTE = 5, "Trailer de Lote"
-    TRAILER_ARQUIVO = 9, "Trailer de Arquivo"
 
 
 class HeaderArquivo(BaseModel):
@@ -52,6 +40,7 @@ class SegmentoA(BaseModel):
     nosso_numero: str
     data_real_efetivacao_pagamento_str: str
     valor_real_efetivacao_pagamento_str: str
+    codigo_ocorrencias: Optional[str] = None
 
     @validator('data_pagamento_str')
     def formatar_data_geracao_arquivo(cls, v):
@@ -142,6 +131,7 @@ class ReportComprovante(BaseModel):
 
 class DetalheReportResultadoProcessamento(BaseModel):
     filial: str
+    filial_sem_inconsistencias: bool
     nome_funcionario: Optional[str] = None
     cpf: Optional[str] = None
     valor_a_pagar: Optional[str] = None

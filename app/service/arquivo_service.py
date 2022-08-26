@@ -6,11 +6,13 @@ from typing import List
 
 from utils.exceptions import finalizar_programa_error
 from dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
-    DetalheArquivo, TipoRegistro, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, \
+    DetalheArquivo, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, \
     ReportResultadoProcessamento, DetalheReportResultadoProcessamento
+from dto.enums import TipoRegistro, TipoArquivoProcessamento
 
 DIR_LIQUIDO_FOLHA = '../recursos/liquido_folha/'
-DIR_RETORNO_BANCARIO = '../recursos/retorno_bancario/'
+DIR_RETORNO_FOLPAG = '../recursos/retorno_comprovante_folpag/'
+DIR_RETORNO_PREVIA_PAGAMENTO = '../recursos/previa_pagamento/'
 DIR_DATASOURCE = '../jasper_report/datasource/'
 
 
@@ -20,8 +22,8 @@ def validar_diretorio_liquido_folha():
         finalizar_programa_error(f'Deve conter UM arquivo do tipo .cvs dentro da pasta {DIR_LIQUIDO_FOLHA}')
 
 
-def validar_diretorio_retorno_bancario():
-    lista_arquivos_liquido_folha = os.listdir(DIR_RETORNO_BANCARIO)
+def validar_diretorio_retorno_folha_pagamento():
+    lista_arquivos_liquido_folha = os.listdir(DIR_RETORNO_FOLPAG)
     if len(lista_arquivos_liquido_folha) <= 0:
         finalizar_programa_error(f'Nao foram encontrados retornos bancarios para processar os comprovantes.')
 
@@ -67,21 +69,23 @@ def carregar_lista_funcionarios_liquido_folha() -> List[Funcionario]:
         finalizar_programa_error(f"Ocorreu um erro ao tentar carregar arquivo Liquido folha: {error}.")
 
 
-def carregar_retornos_bancario() -> List[ArquivoRetorno]:
+def carregar_retornos_bancario(tipo_arquivo_processamto: TipoArquivoProcessamento) -> List[ArquivoRetorno]:
     logging.info('Carregando dados dos arquivo de retorno bancario.')
     try:
         lista_arquivos_retorno = []
-        arquivos_retornos_bancario = os.listdir(DIR_RETORNO_BANCARIO)
+        dados_diretorio = buscar_dados_diretorio_pelo_tipo_processamento(tipo_arquivo_processamto)
+        diretorio = dados_diretorio['diretorio']
+        arquivos_retornos_bancario = dados_diretorio['lista_arquivos']
 
         for nome_arquivo in arquivos_retornos_bancario:
-            arq_retorno = os.path.join(DIR_RETORNO_BANCARIO, nome_arquivo)
+            arq_retorno = os.path.join(diretorio, nome_arquivo)
             dados_retorno_bancario = ler_arquivo_retorno(arq_retorno)
 
             primeira_linha = dados_retorno_bancario[0]
             if int(primeira_linha[0:3]) != 237 and int(primeira_linha[142:143]) != 2:
                 finalizar_programa_error(f"Arquivo {arq_retorno} nao 'e arquivo de retorno do BRADESCO.")
 
-            conteudo_arq_retorno = gerar_arquivo_retorno_bradesco(dados_retorno_bancario)
+            conteudo_arq_retorno = gerar_arquivo_retorno_bradesco(dados_retorno_bancario, tipo_arquivo_processamto)
             lista_arquivos_retorno.append(conteudo_arq_retorno)
 
         return lista_arquivos_retorno
@@ -89,12 +93,24 @@ def carregar_retornos_bancario() -> List[ArquivoRetorno]:
         finalizar_programa_error(f"Ocorreu um erro ao tentar carregar arquivo de retorno bancario: {error}.")
 
 
+def buscar_dados_diretorio_pelo_tipo_processamento(tipo_arquivo_processamto: TipoArquivoProcessamento) -> dict:
+    if tipo_arquivo_processamto == TipoArquivoProcessamento.PREVIA_PAGAMENTO:
+        endereco_diretorio = DIR_RETORNO_PREVIA_PAGAMENTO
+        arquivos_retornos_bancario = os.listdir(DIR_RETORNO_PREVIA_PAGAMENTO)
+    else:
+        endereco_diretorio = DIR_RETORNO_FOLPAG
+        arquivos_retornos_bancario = os.listdir(DIR_RETORNO_FOLPAG)
+
+    return {'diretorio': endereco_diretorio, 'lista_arquivos': arquivos_retornos_bancario}
+
+
 def ler_arquivo_retorno(arquivo_retorno: str) -> List[str]:
     with open(arquivo_retorno, "r") as arquivo:
         return arquivo.readlines()
 
 
-def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str]) -> ArquivoRetorno:
+def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str],
+                                   tipo_arquivo_processamto: TipoArquivoProcessamento) -> ArquivoRetorno:
     lista_detalhes = []
     header_arquivo = None
     trailer_lote = None
@@ -106,7 +122,7 @@ def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str]) -> Arquivo
         if tipo_registro == TipoRegistro.HEADER_ARQUIVO.value[0]:
             header_arquivo = gerar_header_arquivo(registro)
         elif tipo_registro == TipoRegistro.DETALHE.value[0] and registro[13:14] == "A" \
-                and validar_ocorrencia_credito_debito_efetivado(registro):
+                and validar_ocorrencia(registro, tipo_arquivo_processamto):
 
             segmento_a = gerar_segmento_a(registro)
             index_segmento_b = (dados_retorno_bancario.index(registro) + 1)
@@ -129,9 +145,14 @@ def gerar_arquivo_retorno_bradesco(dados_retorno_bancario: List[str]) -> Arquivo
     )
 
 
-def validar_ocorrencia_credito_debito_efetivado(registro: str):
+def validar_ocorrencia(registro: str, tipo_arquivo_processamto: TipoArquivoProcessamento):
     codigos_ocorrencia = registro[230:240]
-    return '00' in codigos_ocorrencia
+
+    if tipo_arquivo_processamto is TipoArquivoProcessamento.PREVIA_PAGAMENTO:
+        return '00' not in codigos_ocorrencia and 'BD' not in codigos_ocorrencia
+
+    if tipo_arquivo_processamto is TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO:
+        return '00' in codigos_ocorrencia
 
 
 def gerar_header_arquivo(registro: str) -> HeaderArquivo:
@@ -172,8 +193,8 @@ def gerar_segmento_a(registro: str) -> SegmentoA:
         valor_pagamento_str=registro[119:134],
         nosso_numero=registro[134:154],
         data_real_efetivacao_pagamento_str=registro[154:162],
-        valor_real_efetivacao_pagamento_str=registro[162:177]
-
+        valor_real_efetivacao_pagamento_str=registro[162:177],
+        codigo_ocorrencias=registro[230:240]
     )
 
 

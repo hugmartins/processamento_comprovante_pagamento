@@ -28,6 +28,7 @@ bancarios de pagamento.
   * relatorio_processamento 
 * recursos
   * liquido_folha
+  * previa_pagamento
   * retorno_bancario
 * venv - interpretador python
 * .gitignore

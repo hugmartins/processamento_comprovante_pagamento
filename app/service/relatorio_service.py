@@ -102,8 +102,11 @@ def gerar_detalhe_report_resultado_processamento(nome_filial: str,
                                                  total_funcionarios_sem_comprovante: int, nome_funcionario: str = None,
                                                  cpf: str = None,
                                                  valor_a_pagar: str = None) -> DetalheReportResultadoProcessamento:
+    filial_sem_inconsistencia = nome_funcionario is None and cpf is None and valor_a_pagar is None
+
     return DetalheReportResultadoProcessamento(
         filial=nome_filial,
+        filial_sem_inconsistencias=filial_sem_inconsistencia,
         nome_funcionario=nome_funcionario,
         cpf=cpf,
         valor_a_pagar=valor_a_pagar,

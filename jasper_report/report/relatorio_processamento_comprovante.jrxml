@@ -17,6 +17,7 @@
 	<field name="total_funcionarios" class="java.lang.String"/>
 	<field name="total_com_comprovante" class="java.lang.String"/>
 	<field name="total_sem_comprovante" class="java.lang.String"/>
+	<field name="filial_sem_inconsistencias" class="java.lang.Boolean"/>
 	<group name="FilialGroup" isReprintHeaderOnEachPage="true">
 		<groupExpression><![CDATA[$F{filial}]]></groupExpression>
 		<groupHeader>
@@ -176,6 +177,7 @@
 	</pageHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{filial_sem_inconsistencias} == false]]></printWhenExpression>
 			<textField>
 				<reportElement x="22" y="0" width="250" height="20" uuid="3b96d96e-b839-4c90-8051-0b5ad729c533">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
@@ -225,9 +227,20 @@
 				<text><![CDATA[CPF:]]></text>
 			</staticText>
 		</band>
+		<band height="20">
+			<printWhenExpression><![CDATA[$F{filial_sem_inconsistencias} == true]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="554" height="20" uuid="11c4a237-0f63-4bb6-a10f-74b3289529ff"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[---]]></text>
+			</staticText>
+		</band>
 	</detail>
 	<pageFooter>
 		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
 				<reportElement x="451" y="0" width="100" height="20" uuid="39351012-90ef-4c18-954a-6891280bdc0d"/>
 				<textElement textAlignment="Right"/>
