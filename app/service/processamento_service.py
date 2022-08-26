@@ -29,6 +29,10 @@ def iniciar_processamento(opcao_processamento: int):
     else:
         finalizar_programa_error('Nenhum dado encontrado no Liquido Folha, favor verificar!')
 
+    switch_processamento(opcao_processamento, funcionarios_liquido_folha)
+
+
+def switch_processamento(opcao_processamento: int, funcionarios_liquido_folha: List[Funcionario]):
     if opcao_processamento == TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO.value:
         processar_comprovante_pagamento(funcionarios_liquido_folha)
     elif opcao_processamento == TipoArquivoProcessamento.PREVIA_PAGAMENTO.value:
@@ -37,7 +41,7 @@ def iniciar_processamento(opcao_processamento: int):
 
 def processar_previa_pagamento():
     # TODO: desenvolver o processamento dos arquivos de previa pagamento
-    print('')
+    finalizar_programa_error('Modulo em desenvolvimento. Aguarde...')
 
 
 def processar_comprovante_pagamento(funcionarios_liquido_folha: List[Funcionario]):

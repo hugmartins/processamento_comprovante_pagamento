@@ -13,7 +13,8 @@ from service.arquivo_service import criar_arquivo_datasource_comprovante_pagamen
 RESOURCES_DIR = '../jasper_report/datasource/'
 REPORTS_DIR = '../jasper_report/report/'
 DIR_COMPROVANTE_POR_FILIAL = '../output/comprovantes/'
-DIR_RELATORIO_RESULTADO_PROCESSAMENTO = '../output/relatorio_processamento/'
+DIR_RELATORIO_RESULTADO_PROCESSAMENTO = '../output/resultado_processamento_comprovantes/'
+DIR_RELATORIO_INCONSISTENCIAS = '../output/relatorio_inconsistencias/'
 DIR_IMG_REPORT = '../jasper_report/img/'
 
 

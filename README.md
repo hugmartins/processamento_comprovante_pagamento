@@ -25,7 +25,8 @@ bancarios de pagamento.
   * report 
 * output
   * comprovantes
-  * relatorio_processamento 
+  * relatorio_processamento
+  * relatorio_inconsistencias
 * recursos
   * liquido_folha
   * previa_pagamento
@@ -61,21 +62,36 @@ Os dados devem ser separdos por **;** (ponto e virgula), o arquivo deve ser salv
 **recursos/liquido_folha**. A **aplicação não funciona com mais de um arquivo dentro da pasta**, sempre remova o anterior 
 antes de adicionar o novo.
 
-#### Arquivo de Retorno do Banco
-Os arquivos de retorno do banco devem ser salvos na pasta **recurso/retorno_bancario** com a extensão **.ret**. Podem ser adicionados 
-quantos arquivos forem necessarios para gerar os comprovantes.
+#### Arquivo de Retorno do Banco - PREVIA PAGAMENTO
+Os arquivos de retorno da previa de pagamento, devem ser salvos na pasta **recurso/previa_pagamento** com a 
+extensão **.ret**. Podem ser adicionados 
+quantos arquivos forem necessarios para gerar o relatorio de inconsistencias.
+Antes de salvar os retornos que serão utilizados, recomendamos a remoção de todos os arquivos bancarios (com 
+as previas de outros meses), evitando a inconsistencia dos dados nos comprovantes gerados. 
+
+#### Arquivo de Retorno do Banco - COMPROVANTES
+Os arquivos de retorno de pagamentos (comprovantes), devem ser salvos na pasta **recurso/retorno_bancario** com a 
+extensão **.ret**. Podem ser adicionados quantos arquivos forem necessarios para gerar os comprovantes.
 Antes de salvar os retornos que serão utilizados, recomendamos a remoção de todos os arquivos bancarios (com 
 pagamentos de outros meses), evitando a inconsistencia dos dados nos comprovantes gerados. 
 
 ### Como executar a aplicação
 Na pasta do projeto tem o arquivo **start_processamento.bat**, onde deve ser aberto com duplo click do mouse. Esse 
-arquivo irá abrir o prompt de comando e então o processamento dos comprovantes iniciará. As etapas serão exibidas na 
+arquivo irá abrir o prompt de comando e então será dada duas opções para seguir com o processamento. Para 
+processamento da previa de pagamento, selecionar a opção 1, para o processamento dos comprovantes, selecionar a 
+opção 2, conforme aparecer na tela.
+As etapas serão 
+exibidas na 
 tela em forma de logs, é importante acompanhar as mensagens exibidas para saber em qual etapa do processamento a 
 aplicação está.
 Em caso de erro no processamento, solicitamos que tire uma fotografia (print) da tela de execução para melhor 
 análise do problema.
 
-### Resultado processamento
+### Resultado processamento - PREVIA PAGAMENTO
+Ao término do processamento, será gerado um relatorio para cada filial que tenha inconsistencias na pasta 
+**output/relatorio_inconsistencias**.
+
+### Resultado processamento - COMPROVANTES
 Ao término do processamento, os comprovantes estarão salvos na pasta **output/comprovantes** separados por filial.
 É gerado tambem o relatorio de **Resultado do Processamento**, localizado na pasta 
 **output/relatorio_processamento**, onde é informado a quantidade de comprovantes gerados e os funcionarios com 
