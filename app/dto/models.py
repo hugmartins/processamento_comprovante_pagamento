@@ -147,3 +147,16 @@ class DetalheReportResultadoProcessamento(BaseModel):
 
 class ReportResultadoProcessamento(BaseModel):
     detalhe_report: List[DetalheReportResultadoProcessamento]
+
+
+class DetalheReportInconsistencias(BaseModel):
+    filial: str
+    nome_funcionario: str
+    cpf: str
+    valor_a_pagar: str
+    inconsistencias_pagamento: List[OcorrenciaPagamento]
+    total_inconsistencias: str
+
+
+class ReportInconsistencias(BaseModel):
+    detalhe_report: List[DetalheReportInconsistencias]

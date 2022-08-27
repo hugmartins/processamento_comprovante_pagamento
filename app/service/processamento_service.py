@@ -50,7 +50,7 @@ def processar_previa_pagamento(funcionarios_liquido_folha: List[Funcionario]):
     else:
         finalizar_programa_error('Nenhum dado encontrado no retorno previa pagamento, favor verificar!')
 
-    # localizar_dados_comprovante_funcionario(funcionarios_liquido_folha, lista_arquivos_previa_pagamento)
+    localizar_dados_comprovante_funcionario(funcionarios_liquido_folha, lista_arquivos_previa_pagamento)
 
     print(json.dumps(lista_arquivos_previa_pagamento, default=lambda o: o.__dict__,))
 
