@@ -14,8 +14,8 @@ MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL = {}
 MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL = {}
 MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL = {}
 
-LISTA_CPF_COM_COMPROVANTE = []
-LISTA_CPF_SEM_COMPROVANTE = []
+TOTAL_FUNCIONARIOS_COM_COMPROVANTE = 0
+TOTAL_FUNCIONARIOS_SEM_COMPROVANTE = 0
 
 
 INCREMENTE_MAIS_UM = 1
@@ -50,9 +50,8 @@ def processar_previa_pagamento(funcionarios_liquido_folha: List[Funcionario]):
     else:
         finalizar_programa_error('Nenhum dado encontrado no retorno previa pagamento, favor verificar!')
 
-    localizar_dados_comprovante_funcionario(funcionarios_liquido_folha, lista_arquivos_previa_pagamento)
-
-    print(json.dumps(lista_arquivos_previa_pagamento, default=lambda o: o.__dict__,))
+    buscar_inconsistencia_pagamento_funcionario(funcionarios_liquido_folha, lista_arquivos_previa_pagamento)
+    print(json.dumps(MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL, default=lambda o: o.__dict__, ))
 
 
 def processar_comprovante_pagamento(funcionarios_liquido_folha: List[Funcionario]):
@@ -65,10 +64,10 @@ def processar_comprovante_pagamento(funcionarios_liquido_folha: List[Funcionario
     else:
         finalizar_programa_error('Nenhum dado encontrado no retorno comprovante pagamento, favor verificar!')
 
-    localizar_dados_comprovante_funcionario(funcionarios_liquido_folha, lista_arquivos_retorno_bancario)
+    burcar_comprovante_funcionario(funcionarios_liquido_folha, lista_arquivos_retorno_bancario)
 
-    logging.info(f'funcionarios COM comprovante: {len(LISTA_CPF_COM_COMPROVANTE)}')
-    logging.warning(f'funcionarios SEM comprovante: {len(LISTA_CPF_SEM_COMPROVANTE)}')
+    logging.info(f'funcionarios COM comprovante: {TOTAL_FUNCIONARIOS_COM_COMPROVANTE}')
+    logging.warning(f'funcionarios SEM comprovante: {TOTAL_FUNCIONARIOS_SEM_COMPROVANTE}')
 
     gerar_relatorio_comprovante(MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL)
 
@@ -86,8 +85,8 @@ def transformar_map_funcionarios_com_comprovante_por_filial() -> dict:
     return map_quantidade_comprovantes_por_filial
 
 
-def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Funcionario],
-                                            lista_arquivos_retorno_bancario: List[ArquivoRetorno]):
+def burcar_comprovante_funcionario(funcionarios_liquido_folha: List[Funcionario],
+                                   lista_arquivos_retorno_bancario: List[ArquivoRetorno]):
     for funcionario in funcionarios_liquido_folha:
         comprovante_encontrado = False
         contabilizar_quantidade_funcionarios_por_filial(funcionario.descricao_filial)
@@ -113,6 +112,26 @@ def localizar_dados_comprovante_funcionario(funcionarios_liquido_folha: List[Fun
             adicionar_funcionario_lista_funcionario_sem_comprovante_por_filial(funcionario)
 
 
+def buscar_inconsistencia_pagamento_funcionario(funcionarios_liquido_folha: List[Funcionario],
+                                                lista_arquivos_retorno_bancario: List[ArquivoRetorno]):
+    for funcionario in funcionarios_liquido_folha:
+        for arquivo_retorno in lista_arquivos_retorno_bancario:
+            for detalhe in arquivo_retorno.lote.detalhe:
+                if funcionario.cpf in detalhe.segmento_b.numero_inscricao_favorecido:
+                    data_geracao_arquivo = formatar_data_str(
+                        data_str=arquivo_retorno.header_arquivo.data_geracao_arquivo_str,
+                        formato_entrada='%d/%m/%Y',
+                        formato_saida='%Y%m'
+                    )
+
+                    funcionario.dados_comprovante = ComprovantePagamentoFuncionario(
+                        nome_empresa_pagadora=arquivo_retorno.header_arquivo.nome_empresa,
+                        data_geracao_arquivo_comprovante=data_geracao_arquivo,
+                        detalhe_comprovante=detalhe
+                    )
+                    adicionar_funcionario_lista_inconsistencias_pagamento_por_filial(funcionario)
+
+
 def adicionar_funcionario_lista_funcionario_comprovante_por_filial(funcionario: Funcionario):
     codigo_filial = funcionario.descricao_filial.split("-")[0]
 
@@ -123,7 +142,8 @@ def adicionar_funcionario_lista_funcionario_comprovante_por_filial(funcionario: 
     else:
         MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL[codigo_filial] = [funcionario]
 
-    LISTA_CPF_COM_COMPROVANTE.append(funcionario.cpf)
+    global TOTAL_FUNCIONARIOS_COM_COMPROVANTE
+    TOTAL_FUNCIONARIOS_COM_COMPROVANTE += 1
 
 
 def adicionar_funcionario_lista_funcionario_sem_comprovante_por_filial(funcionario: Funcionario):
@@ -136,7 +156,8 @@ def adicionar_funcionario_lista_funcionario_sem_comprovante_por_filial(funcionar
     else:
         MAP_FUNCIONARIOS_SEM_COMPROVANTE_POR_FILIAL[codigo_filial] = [funcionario]
 
-    LISTA_CPF_SEM_COMPROVANTE.append(funcionario.cpf)
+    global TOTAL_FUNCIONARIOS_SEM_COMPROVANTE
+    TOTAL_FUNCIONARIOS_SEM_COMPROVANTE += 1
 
 
 def contabilizar_quantidade_funcionarios_por_filial(nome_filial: str):
@@ -149,3 +170,14 @@ def contabilizar_quantidade_funcionarios_por_filial(nome_filial: str):
         MAP_TOTAL_FUNCIONARIOS_POR_FILIAL[codigo_filial] = {
             "nome_filial": nome_filial, "quantidade_funcionario": INCREMENTE_MAIS_UM
         }
+
+
+def adicionar_funcionario_lista_inconsistencias_pagamento_por_filial(funcionario: Funcionario):
+    codigo_filial = funcionario.descricao_filial.split("-")[0]
+
+    if codigo_filial in MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL:
+        lista_funcionarios_filial = MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL[codigo_filial]
+        lista_funcionarios_filial.append(funcionario)
+        MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL[codigo_filial] = lista_funcionarios_filial
+    else:
+        MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL[codigo_filial] = [funcionario]
