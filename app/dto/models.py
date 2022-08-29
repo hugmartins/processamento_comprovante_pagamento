@@ -154,7 +154,8 @@ class DetalheReportInconsistencias(BaseModel):
     nome_funcionario: str
     cpf: str
     valor_a_pagar: str
-    inconsistencias_pagamento: List[OcorrenciaPagamento]
+    codigo_ocorrencia: Optional[str] = None
+    descricao_ocorrencia: Optional[str] = None
     total_inconsistencias: Optional[str] = None
 
 

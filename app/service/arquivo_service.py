@@ -280,7 +280,7 @@ def criar_arquivo_datasource_inconsistencia_pagamento(nome_arquivo: str,
     try:
         nome_atributos = list(DetalheReportInconsistencias.schema()["properties"].keys())
 
-        with open(arquivo_datasource, "w") as datasource_csv:
+        with open(arquivo_datasource, "w", encoding="utf-8") as datasource_csv:
             escritor = csv.DictWriter(datasource_csv, fieldnames=nome_atributos)
             escritor.writeheader()
             for detalhe_report in inconsistencia_pagamento_filial.detalhe_report:

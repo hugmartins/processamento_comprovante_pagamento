@@ -2,6 +2,7 @@ import os
 import logging
 from pyreportjasper import PyReportJasper
 from operator import attrgetter
+from typing import List
 
 from dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ReportResultadoProcessamento, \
     DetalheReportResultadoProcessamento, DetalheReportInconsistencias, ReportInconsistencias
@@ -151,12 +152,8 @@ def gerar_relatorio_inconsistencias(map_funcionarios_por_filial: dict):
     for codigo_filial in map_funcionarios_por_filial:
         logging.info(f'Gerando relatorio de inconsistencia da filial {codigo_filial}.')
 
-        lista_report_inconsistencia = []
-        total_inconsistencias_filial = len(map_funcionarios_por_filial[codigo_filial])
-        for funcionario_filial in map_funcionarios_por_filial[codigo_filial]:
-            detalhe_report = converter_funcionario_para_detalhe_report_inconsistencia(funcionario_filial)
-            detalhe_report.total_inconsistencias = str(total_inconsistencias_filial)
-            lista_report_inconsistencia.append(detalhe_report)
+        lista_report_inconsistencia = converter_funcionario_para_detalhe_report_inconsistencia(
+            codigo_filial, map_funcionarios_por_filial)
 
         comprovante_report = ReportInconsistencias(
             detalhe_report=sorted(lista_report_inconsistencia, key=attrgetter('nome_funcionario'))
@@ -169,16 +166,25 @@ def gerar_relatorio_inconsistencias(map_funcionarios_por_filial: dict):
         montar_parametros_para_gerar_relatorio_inconsistencias(codigo_filial, nome_arquivo_datasource)
 
 
-def converter_funcionario_para_detalhe_report_inconsistencia(funcionario: Funcionario) -> DetalheReportInconsistencias:
-    cpf = formatar_cpf_funcionario(funcionario.cpf)
+def converter_funcionario_para_detalhe_report_inconsistencia(codigo_filial: str, map_funcionarios_por_filial: dict) -> \
+        List[DetalheReportInconsistencias]:
 
-    return DetalheReportInconsistencias(
-        filial=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
-        nome_funcionario=funcionario.nome_completo.upper(),
-        cpf=cpf,
-        valor_a_pagar=funcionario.src_total_verba,
-        inconsistencias_pagamento=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.ocorrencia
-    )
+    lista_report_inconsistencia = []
+    total_inconsistencias_filial = len(map_funcionarios_por_filial[codigo_filial])
+    for funcionario_filial in map_funcionarios_por_filial[codigo_filial]:
+        for ocorrencia in funcionario_filial.dados_comprovante.detalhe_comprovante.segmento_a.ocorrencia:
+            detalhe_report = DetalheReportInconsistencias(
+                filial=funcionario_filial.descricao_filial.upper(),
+                nome_funcionario=funcionario_filial.nome_completo.upper(),
+                cpf=formatar_cpf_funcionario(funcionario_filial.cpf),
+                valor_a_pagar=funcionario_filial.src_total_verba,
+                codigo_ocorrencia=ocorrencia.codigo_ocorrencia,
+                descricao_ocorrencia=ocorrencia.descricao_ocorrencia,
+                total_inconsistencias=total_inconsistencias_filial
+            )
+            lista_report_inconsistencia.append(detalhe_report)
+
+    return lista_report_inconsistencia
 
 
 def montar_parametros_para_gerar_relatorio_comprovante_pagamento(codigo_filial: str, data_geracao_arquivo: str,
