@@ -6,8 +6,8 @@ from typing import List
 
 from utils.exceptions import finalizar_programa_error
 from dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
-    DetalheArquivo, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, \
-    ReportResultadoProcessamento, DetalheReportResultadoProcessamento, OcorrenciaPagamento
+    DetalheArquivo, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, ReportInconsistencias, \
+    ReportResultadoProcessamento, DetalheReportResultadoProcessamento, OcorrenciaPagamento, DetalheReportInconsistencias
 from dto.enums import TipoRegistro, TipoArquivoProcessamento, TiposOcorrenciasPagamento
 
 DIR_LIQUIDO_FOLHA = '../recursos/liquido_folha/'
@@ -269,6 +269,21 @@ def criar_arquivo_datasource_comprovante_pagamento(nome_arquivo: str, comprovant
             escritor = csv.DictWriter(datasource_csv, fieldnames=nome_atributos)
             escritor.writeheader()
             for detalhe_report in comprovantes_pagamento_filial.detalhe_report:
+                escritor.writerow(json.loads(detalhe_report.json()))
+    except Exception as error:
+        finalizar_programa_error(f'Erro ao tentar gerar datasource {nome_arquivo}. {error}')
+
+
+def criar_arquivo_datasource_inconsistencia_pagamento(nome_arquivo: str,
+                                                      inconsistencia_pagamento_filial: ReportInconsistencias):
+    arquivo_datasource = os.path.join(DIR_DATASOURCE, f'{nome_arquivo}.csv')
+    try:
+        nome_atributos = list(DetalheReportInconsistencias.schema()["properties"].keys())
+
+        with open(arquivo_datasource, "w") as datasource_csv:
+            escritor = csv.DictWriter(datasource_csv, fieldnames=nome_atributos)
+            escritor.writeheader()
+            for detalhe_report in inconsistencia_pagamento_filial.detalhe_report:
                 escritor.writerow(json.loads(detalhe_report.json()))
     except Exception as error:
         finalizar_programa_error(f'Erro ao tentar gerar datasource {nome_arquivo}. {error}')

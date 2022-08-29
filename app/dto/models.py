@@ -155,7 +155,7 @@ class DetalheReportInconsistencias(BaseModel):
     cpf: str
     valor_a_pagar: str
     inconsistencias_pagamento: List[OcorrenciaPagamento]
-    total_inconsistencias: str
+    total_inconsistencias: Optional[str] = None
 
 
 class ReportInconsistencias(BaseModel):

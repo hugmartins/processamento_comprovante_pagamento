@@ -4,11 +4,11 @@ from pyreportjasper import PyReportJasper
 from operator import attrgetter
 
 from dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ReportResultadoProcessamento, \
-    DetalheReportResultadoProcessamento
+    DetalheReportResultadoProcessamento, DetalheReportInconsistencias, ReportInconsistencias
 from utils.utils import data_atual_formatada, formatar_cpf_funcionario
 from utils.exceptions import finalizar_programa_error
 from service.arquivo_service import criar_arquivo_datasource_comprovante_pagamento, \
-    criar_arquivo_datasource_resultado_processamento
+    criar_arquivo_datasource_resultado_processamento, criar_arquivo_datasource_inconsistencia_pagamento
 
 RESOURCES_DIR = '../jasper_report/datasource/'
 REPORTS_DIR = '../jasper_report/report/'
@@ -27,7 +27,7 @@ def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
 
         for funcionario_filial in map_funcionarios_comprovante[codigo_filial]:
             data_geracao_arquivo_pagamento = funcionario_filial.dados_comprovante.data_geracao_arquivo_comprovante
-            detalhe_comprovante_report = converter_funcionario_para_report_comprovante(funcionario_filial)
+            detalhe_comprovante_report = converter_funcionario_para_detalhe_report_comprovante(funcionario_filial)
             lista_report_comprovante.append(detalhe_comprovante_report)
 
         comprovante_report = ReportComprovante(
@@ -117,7 +117,7 @@ def gerar_detalhe_report_resultado_processamento(nome_filial: str,
     )
 
 
-def converter_funcionario_para_report_comprovante(funcionario: Funcionario) -> DetalheReportComprovante:
+def converter_funcionario_para_detalhe_report_comprovante(funcionario: Funcionario) -> DetalheReportComprovante:
     cpf = formatar_cpf_funcionario(funcionario.cpf)
     agencia_pagamento = gerar_agencia_ou_conta_com_digito_verificador(
         funcionario.dados_comprovante.detalhe_comprovante.segmento_a.agencia,
@@ -145,6 +145,40 @@ def gerar_agencia_ou_conta_com_digito_verificador(agencia_ou_conta: str, digito_
         digito_verificador = 0
 
     return ''.join((agencia_ou_conta, '-', str(digito_verificador)))
+
+
+def gerar_relatorio_inconsistencias(map_funcionarios_por_filial: dict):
+    for codigo_filial in map_funcionarios_por_filial:
+        logging.info(f'Gerando relatorio de inconsistencia da filial {codigo_filial}.')
+
+        lista_report_inconsistencia = []
+        total_inconsistencias_filial = len(map_funcionarios_por_filial[codigo_filial])
+        for funcionario_filial in map_funcionarios_por_filial[codigo_filial]:
+            detalhe_report = converter_funcionario_para_detalhe_report_inconsistencia(funcionario_filial)
+            detalhe_report.total_inconsistencias = str(total_inconsistencias_filial)
+            lista_report_inconsistencia.append(detalhe_report)
+
+        comprovante_report = ReportInconsistencias(
+            detalhe_report=sorted(lista_report_inconsistencia, key=attrgetter('nome_funcionario'))
+        )
+
+        data_nome_arquivo = data_atual_formatada()
+        nome_arquivo_datasource = f'{codigo_filial}_inconsistencia_pagamento_{data_nome_arquivo}'
+
+        criar_arquivo_datasource_inconsistencia_pagamento(nome_arquivo_datasource, comprovante_report)
+        montar_parametros_para_gerar_relatorio_inconsistencias(codigo_filial, nome_arquivo_datasource)
+
+
+def converter_funcionario_para_detalhe_report_inconsistencia(funcionario: Funcionario) -> DetalheReportInconsistencias:
+    cpf = formatar_cpf_funcionario(funcionario.cpf)
+
+    return DetalheReportInconsistencias(
+        filial=funcionario.dados_comprovante.nome_empresa_pagadora.upper(),
+        nome_funcionario=funcionario.nome_completo.upper(),
+        cpf=cpf,
+        valor_a_pagar=funcionario.src_total_verba,
+        inconsistencias_pagamento=funcionario.dados_comprovante.detalhe_comprovante.segmento_a.ocorrencia
+    )
 
 
 def montar_parametros_para_gerar_relatorio_comprovante_pagamento(codigo_filial: str, data_geracao_arquivo: str,
@@ -179,6 +213,24 @@ def montar_parametros_para_gerar_relatorio_resultado_processamento(nome_datasour
         gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv, parametros)
 
         logging.info(f'Relatorio com resultado do processamento gerado com sucesso. {output_file}.pdf')
+    except Exception as error:
+        finalizar_programa_error(f'Erro ao tentar gerar PDF a partir do datasource {nome_datasource}. {error}')
+
+
+def montar_parametros_para_gerar_relatorio_inconsistencias(codigo_filial: str, nome_datasource: str):
+    try:
+        input_file = os.path.join(REPORTS_DIR, 'relatorio_inconsistencias.jrxml')
+        output_file = os.path.join(DIR_RELATORIO_INCONSISTENCIAS
+                                   , f'{codigo_filial} - {data_atual_formatada("%d_%m_%Y")} - INCONSISTENCIAS PAGAMENTO')
+
+        nome_colunas_csv = list(DetalheReportInconsistencias.schema()["properties"].keys())
+        parametros = {
+            "logo_cbm": os.path.abspath(os.path.join(DIR_IMG_REPORT, 'logo_cbm.png')),
+            "data_atual": data_atual_formatada('%d/%m/%Y')
+        }
+        gerar_relatorio_jaspersoft(input_file, output_file, nome_datasource, nome_colunas_csv, parametros)
+
+        logging.info(f'Relatorio de inconsistencias da filial {codigo_filial} gerado com sucesso. {output_file}.pdf')
     except Exception as error:
         finalizar_programa_error(f'Erro ao tentar gerar PDF a partir do datasource {nome_datasource}. {error}')
 

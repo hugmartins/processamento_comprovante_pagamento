@@ -7,7 +7,8 @@ from dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFunciona
 from dto.enums import TipoArquivoProcessamento
 from service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_folha_pagamento, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, validar_diretorio_retorno_previa_pagamento
-from service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento
+from service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento, \
+    gerar_relatorio_inconsistencias
 
 MAP_TOTAL_FUNCIONARIOS_POR_FILIAL = {}
 MAP_FUNCIONARIOS_COM_COMPROVANTE_POR_FILIAL = {}
@@ -51,7 +52,11 @@ def processar_previa_pagamento(funcionarios_liquido_folha: List[Funcionario]):
         finalizar_programa_error('Nenhum dado encontrado no retorno previa pagamento, favor verificar!')
 
     buscar_inconsistencia_pagamento_funcionario(funcionarios_liquido_folha, lista_arquivos_previa_pagamento)
-    print(json.dumps(MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL, default=lambda o: o.__dict__, ))
+
+    if len(MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL) == 0:
+        finalizar_programa_error('Nao foram encontrados funcionarios com inconsistencia no pagamento!')
+    else:
+        gerar_relatorio_inconsistencias(MAP_FUNCIONARIOS_INCOSISTENTES_POR_FILIAL)
 
 
 def processar_comprovante_pagamento(funcionarios_liquido_folha: List[Funcionario]):
