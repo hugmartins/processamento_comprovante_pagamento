@@ -3,7 +3,7 @@ import logging
 from typing import List
 from utils.exceptions import finalizar_programa_error
 from utils.utils import formatar_data_str
-from dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario
+from dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario, gerar_novo_funcionario
 from dto.enums import TipoArquivoProcessamento
 from service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_folha_pagamento, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, validar_diretorio_retorno_previa_pagamento
@@ -111,7 +111,9 @@ def burcar_comprovante_funcionario(funcionarios_liquido_folha: List[Funcionario]
                         data_geracao_arquivo_comprovante=data_geracao_arquivo,
                         detalhe_comprovante=detalhe
                     )
-                    adicionar_funcionario_lista_funcionario_comprovante_por_filial(funcionario)
+
+                    funcionario_com_comprovante = gerar_novo_funcionario(funcionario)
+                    adicionar_funcionario_lista_funcionario_comprovante_por_filial(funcionario_com_comprovante)
 
         if comprovante_encontrado is False:
             adicionar_funcionario_lista_funcionario_sem_comprovante_por_filial(funcionario)

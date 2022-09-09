@@ -103,7 +103,8 @@ class ArquivoRetorno(BaseModel):
 
 class ComprovantePagamentoFuncionario(BaseModel):
     nome_empresa_pagadora: str = Field(title="Nome empresa pagadora", default=None, example="CBM")
-    data_geracao_arquivo_comprovante: str = Field(title="Data da geracao do arquivo de pagamento", default=None, example="202208")
+    data_geracao_arquivo_comprovante: str = Field(title="Data da geracao do arquivo de pagamento", default=None,
+                                                  example="202208")
     detalhe_comprovante: DetalheArquivo = Field(title="Detalhe pagamentos", default=None)
 
 
@@ -117,6 +118,20 @@ class Funcionario(BaseModel):
     banco: str = Field(title="Banco Recebedor", example="BRADESCO")
     src_total_verba: str = Field(title="Valor Pagamento", example="1000,10")
     dados_comprovante: ComprovantePagamentoFuncionario = Field(title="Dados comprovante pagamento", default=None)
+
+
+def gerar_novo_funcionario(funcionario: Funcionario):
+    return Funcionario(
+        descricao_filial=funcionario.descricao_filial,
+        nome_completo=funcionario.nome_completo,
+        id_funcionario=funcionario.id_funcionario,
+        cpf=funcionario.cpf,
+        agencia_salario=funcionario.agencia_salario,
+        conta_salario=funcionario.conta_salario,
+        banco=funcionario.banco,
+        src_total_verba=funcionario.src_total_verba,
+        dados_comprovante=funcionario.dados_comprovante
+    )
 
 
 class DetalheReportComprovante(BaseModel):

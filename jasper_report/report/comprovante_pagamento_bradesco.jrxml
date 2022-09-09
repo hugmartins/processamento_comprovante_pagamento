@@ -122,7 +122,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Agnência:]]></text>
+				<text><![CDATA[Agência:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="10" y="50" width="40" height="30" uuid="48d6957e-2196-400b-a402-bd8753a67f3d"/>
