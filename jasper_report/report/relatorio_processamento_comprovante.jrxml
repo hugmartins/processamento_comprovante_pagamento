@@ -143,10 +143,27 @@
 					<text><![CDATA[Funcionários sem Comprovante]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="415" y="38" width="49" height="17" backcolor="rgba(247, 11, 7, 0.4627451)" uuid="5068a1b7-6461-44b7-9ce2-080892141cb2">
+					<reportElement mode="Opaque" x="415" y="38" width="49" height="17" backcolor="rgba(245, 221, 7, 0.4627451)" uuid="5068a1b7-6461-44b7-9ce2-080892141cb2">
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 						<printWhenExpression><![CDATA[($F{total_com_comprovante} + $F{total_sem_comprovante}) > $F{total_funcionarios}]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph lineSpacing="Single" leftIndent="3"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="488" y="38" width="49" height="17" backcolor="rgba(245, 15, 53, 0.4627451)" uuid="5d921b75-5d65-4025-b6b8-eec66ee6e8da">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[$F{total_sem_comprovante} > 0]]></printWhenExpression>
 					</reportElement>
 					<box>
 						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
