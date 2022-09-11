@@ -29,8 +29,6 @@ def iniciar():
 
     validar_opcao_selecionada(opcao)
 
-    processar_opcao_usuario(int(opcao))
-
 
 def validar_opcao_selecionada(opcao_selecionada: str):
     lista_opcoes_aceitas = [opcao.value['num_op'] for opcao in OpcaoProcessamento]
@@ -39,6 +37,8 @@ def validar_opcao_selecionada(opcao_selecionada: str):
         logging.error(f'Opcao "{opcao_selecionada}" invalida. \n\n')
         time.sleep(1)
         iniciar()
+    else:
+        processar_opcao_usuario(int(opcao_selecionada))
 
 
 def processar_opcao_usuario(opcao_selecionada: int):
