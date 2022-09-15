@@ -1,9 +1,9 @@
 import logging
 import time
 from datetime import datetime
-from service.processamento_service import iniciar_processamento
-from dto.enums import OpcaoProcessamento
-from service.arquivo_service import excluir_datasources_existentes
+from app.service.processamento_service import iniciar_processamento
+from app.dto.enums import OpcaoProcessamento
+from app.service.arquivo_service import excluir_datasources_existentes
 
 
 def configurar_log():
@@ -11,8 +11,9 @@ def configurar_log():
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[
+            logging.FileHandler("log_processamento.log"),
             logging.StreamHandler()
-        ]
+        ],
     )
 
 

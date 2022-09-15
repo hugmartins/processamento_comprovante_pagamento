@@ -1,13 +1,13 @@
 import json
 import logging
 from typing import List
-from utils.exceptions import finalizar_programa_error
-from utils.utils import formatar_data_str
-from dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario, gerar_novo_funcionario
-from dto.enums import TipoArquivoProcessamento
-from service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_folha_pagamento, \
+from app.utils.exceptions import finalizar_programa_error
+from app.utils.utils import formatar_data_str
+from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario, gerar_novo_funcionario
+from app.dto.enums import TipoArquivoProcessamento
+from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_folha_pagamento, \
     carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, validar_diretorio_retorno_previa_pagamento
-from service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento, \
+from app.service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento, \
     gerar_relatorio_inconsistencias
 
 MAP_TOTAL_FUNCIONARIOS_POR_FILIAL = {}

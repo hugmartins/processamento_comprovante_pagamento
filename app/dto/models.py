@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List
-from utils.utils import formatar_data_str, formatar_valor_pagamento
+from app.utils.utils import formatar_data_str, formatar_valor_pagamento
 
 
 class HeaderArquivo(BaseModel):
