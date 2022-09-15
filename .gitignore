@@ -9,5 +9,5 @@ output/relatorio_inconsistencias/
 output/resultado_processamento_comprovantes/
 app/log_processamento.log
 build/
-processamento_comprovante_pagamento.zip
-app/start_processamento.exe
+app/processamento_comprovante_pagamento_build
+app/*.exe
