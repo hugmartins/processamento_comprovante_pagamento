@@ -1,3 +1,2 @@
 pydantic
 pyreportjasper
-pyinstaller

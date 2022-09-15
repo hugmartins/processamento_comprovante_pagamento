@@ -4,11 +4,11 @@ import csv
 import json
 from typing import List
 
-from app.utils.exceptions import finalizar_programa_error
-from app.dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
+from utils.exceptions import finalizar_programa_error
+from dto.models import Funcionario, ArquivoRetorno, HeaderArquivo, TrailerArquivo, SegmentoA, SegmentoB, \
     DetalheArquivo, TrailerLote, Lote, ReportComprovante, DetalheReportComprovante, ReportInconsistencias, \
     ReportResultadoProcessamento, DetalheReportResultadoProcessamento, OcorrenciaPagamento, DetalheReportInconsistencias
-from app.dto.enums import TipoRegistro, TipoArquivoProcessamento, TiposOcorrenciasPagamento
+from dto.enums import TipoRegistro, TipoArquivoProcessamento, TiposOcorrenciasPagamento
 
 DIR_LIQUIDO_FOLHA = '../recursos/liquido_folha/'
 DIR_RETORNO_FOLPAG = '../recursos/retorno_comprovante_folpag/'

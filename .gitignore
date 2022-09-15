@@ -7,3 +7,4 @@ recursos/retorno_comprovante_folpag/
 output/comprovantes/
 output/relatorio_inconsistencias/
 output/resultado_processamento_comprovantes/
+app/log_processamento.log
