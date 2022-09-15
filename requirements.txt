@@ -1,2 +1,3 @@
 pydantic
-pyreportjasper
+pyinstaller
+jpype1

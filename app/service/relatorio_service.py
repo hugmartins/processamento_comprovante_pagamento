@@ -1,14 +1,14 @@
 import os
 import logging
-from pyreportjasper import PyReportJasper
+from jasper_report.pyreportjasper import PyReportJasper
 from operator import attrgetter
 from typing import List
 
-from dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ReportResultadoProcessamento, \
+from app.dto.models import Funcionario, ReportComprovante, DetalheReportComprovante, ReportResultadoProcessamento, \
     DetalheReportResultadoProcessamento, DetalheReportInconsistencias, ReportInconsistencias
-from utils.utils import data_atual_formatada, formatar_cpf_funcionario
-from utils.exceptions import finalizar_programa_error
-from service.arquivo_service import criar_arquivo_datasource_comprovante_pagamento, \
+from app.utils.utils import data_atual_formatada, formatar_cpf_funcionario
+from app.utils.exceptions import finalizar_programa_error
+from app.service.arquivo_service import criar_arquivo_datasource_comprovante_pagamento, \
     criar_arquivo_datasource_resultado_processamento, criar_arquivo_datasource_inconsistencia_pagamento
 
 RESOURCES_DIR = '../jasper_report/datasource/'
@@ -261,6 +261,7 @@ def gerar_relatorio_jaspersoft(input_file: str, output_file: str, nome_datasourc
         output_file,
         output_formats=["pdf"],
         parameters=parametros,
-        db_connection=conn
+        db_connection=conn,
+        resource=os.path.abspath('../jasper_report/libs')
     )
     pyreportjasper.process_report()
