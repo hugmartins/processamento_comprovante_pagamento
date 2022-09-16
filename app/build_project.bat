@@ -53,6 +53,6 @@ xcopy /s/e utils\ processamento_comprovante_pagamento_build\app\utils\
 
 xcopy  __init__.py processamento_comprovante_pagamento_build\app
 xcopy  iniciar_processamento.py processamento_comprovante_pagamento_build\app
-xcopy  start_processamento_arq_ban.exe processamento_comprovante_pagamento_build\app
+move  start_processamento_arq_ban.exe processamento_comprovante_pagamento_build\app
 
 cmd /k
