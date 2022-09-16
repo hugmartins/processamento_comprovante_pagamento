@@ -40,7 +40,7 @@ bancarios de pagamento.
 ## Dependências
 A aplicação foi desenvolvida utilizando da tecnologia Python 3.9, para o seu funcionamento, é necessario que na 
 máquina:
-* esteja instalado o Python 3.9;
+* esteja instalado o Python 3.9 e Java JDK 11 64 bits;
 * acesso de leitura e escrita de arquivos nas pastas do projeto, tanto a aplicação quanto o usuario que irá executar 
 a mesma;
 * usuario com acesso para executar comandos no prompt de comando;
