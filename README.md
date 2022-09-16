@@ -45,8 +45,6 @@ máquina:
 * acesso de leitura e escrita de arquivos nas pastas do projeto, tanto a aplicação quanto o usuario que irá executar 
 a mesma;
 * usuario com acesso para executar comandos no prompt de comando;
-* acesso à internet para baixar as dependências;
-* acesso para instalar as dependências (a instalação é feita na primeira vez que a aplicação é executada);
 
 ## Executando Projeto
 
