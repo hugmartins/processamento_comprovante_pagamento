@@ -1,5 +1,4 @@
 import os
-import warnings
 from jasper_report.pyreportjasper.config import Config
 from jasper_report.pyreportjasper.report import Report
 
@@ -187,19 +186,3 @@ class PyReportJasper:
             list_param.append(str(result[i].getName()))
             i += 1
         return list_param
-
-    def process(self, input_file, output_file=False, format_list=['pdf'],
-                parameters={}, db_connection={}, locale='pt_BR', resource=""):
-        warnings.warn("process is deprecated - use config and then process_report instead. See the documentation "
-                      "https://pyreportjasper.readthedocs.io",
-                      DeprecationWarning)
-        self.config(
-            input_file=input_file,
-            output_file=output_file,
-            output_formats=format_list,
-            parameters=parameters,
-            db_connection=db_connection,
-            locale=locale,
-            resource=resource
-        )
-        self.process_report()

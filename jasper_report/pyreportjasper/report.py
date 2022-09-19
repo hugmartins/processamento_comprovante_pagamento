@@ -111,25 +111,18 @@ class Report:
         try:
             # This fails in case of an jrxml file
             j_object = self.jvJRLoader.loadObject(self.File(input_file))
-            cast_error = True
+
             try:
                 self.jasper_report = jpype.JObject(j_object, self.JasperReport)
-                cast_error = False
                 self.initial_input_type = 'JASPER_REPORT'
-            except:
-                # nothing to do here
-                pass
-            try:
-                self.jasper_print = jpype.JObject(j_object, self.JasperPrint)
-                cast_error = False
-                self.initial_input_type = 'JASPER_PRINT'
-            except:
-                # nothing to do here
-                pass
+            except (Exception,):
+                try:
+                    self.jasper_print = jpype.JObject(j_object, self.JasperPrint)
+                    self.initial_input_type = 'JASPER_PRINT'
+                except (Exception,):
+                    raise NameError('input file: {0} is not of a valid type'.format(self.input_file))
 
-            if cast_error:
-                raise NameError('input file: {0} is not of a valid type'.format(self.input_file))
-        except Exception:
+        except (Exception, ):
             try:
                 self.jasper_design = self.JRXmlLoader.load(input_file)
                 self.initial_input_type = 'JASPER_DESIGN'

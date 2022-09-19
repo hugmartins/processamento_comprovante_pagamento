@@ -14,6 +14,8 @@ echo.
 if exist processamento_comprovante_pagamento_build rmdir /s /q processamento_comprovante_pagamento_build
 if exist start_processamento_arq_ban.exe del /s /q start_processamento_arq_ban.exe
 
+del /s /q ..\jasper_report\datasource\*.*
+
 echo.
 echo ----------------------------------------------------------------------
 echo     Gerando start_processamento_arq_ban.exe
@@ -41,11 +43,15 @@ echo ----------------------------------------------------------------------
 echo.
 
 mkdir processamento_comprovante_pagamento_build
+mkdir processamento_comprovante_pagamento_build\output\comprovantes\
+mkdir processamento_comprovante_pagamento_build\output\relatorio_inconsistencias\
+mkdir processamento_comprovante_pagamento_build\output\resultado_processamento_comprovantes\
+
 xcopy  ..\README.md processamento_comprovante_pagamento_build
 
 xcopy /s/e ..\jasper_report processamento_comprovante_pagamento_build\jasper_report\
 xcopy /s/e ..\recursos processamento_comprovante_pagamento_build\recursos\
-xcopy /s/e ..\output processamento_comprovante_pagamento_build\output\
+REM xcopy /s/e ..\output processamento_comprovante_pagamento_build\output\
 
 xcopy /s/e dto\ processamento_comprovante_pagamento_build\app\dto\
 xcopy /s/e service\ processamento_comprovante_pagamento_build\app\service\
