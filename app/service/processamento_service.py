@@ -5,8 +5,7 @@ from app.utils.utils import formatar_data_str
 from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario, gerar_novo_funcionario
 from app.dto.enums import TipoArquivoProcessamento
 from app.service.arquivo_service import ArquivoService
-from app.service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento, \
-    gerar_relatorio_inconsistencias
+from app.service.relatorio_service import RelatorioService
 from app.dto.constant import INCREMENTE_MAIS_UM
 
 
@@ -21,10 +20,12 @@ class ProcessamentoService:
         self.total_funcionarios_com_comprovante = 0
         self.total_funcionarios_sem_comprovante = 0
 
+        self.arquivo_service = ArquivoService()
+
     def iniciar_processamento(self, opcao_processamento=int):
         self.opcao_processamento = opcao_processamento
-        ArquivoService().validar_diretorio_liquido_folha()
-        funcionarios_liquido_folha = ArquivoService().carregar_lista_funcionarios_liquido_folha()
+
+        funcionarios_liquido_folha = self.arquivo_service.carregar_lista_funcionarios_liquido_folha()
 
         if len(funcionarios_liquido_folha) > 0:
             logging.info(f'Liquido Folha com sucesso! Total funcionarios: {len(funcionarios_liquido_folha)}')
@@ -40,9 +41,8 @@ class ProcessamentoService:
             self.__processar_previa_pagamento(funcionarios_liquido_folha)
 
     def __processar_previa_pagamento(self, funcionarios_liquido_folha: List[Funcionario]):
-        ArquivoService().validar_diretorio_retorno_previa_pagamento()
         lista_arquivos_previa_pagamento = \
-            ArquivoService().carregar_retornos_bancario(TipoArquivoProcessamento.PREVIA_PAGAMENTO)
+            self.arquivo_service.carregar_retornos_bancario(TipoArquivoProcessamento.PREVIA_PAGAMENTO)
 
         if len(lista_arquivos_previa_pagamento) > 0:
             logging.info(f'Retornos previa pagamentos carregados com sucesso! '
@@ -55,12 +55,11 @@ class ProcessamentoService:
         if len(self.map_funcionarios_inconsistentes_por_filial) == 0:
             finalizar_programa_error('Nao foram encontrados funcionarios com inconsistencia no pagamento!')
         else:
-            gerar_relatorio_inconsistencias(self.map_funcionarios_inconsistentes_por_filial)
+            RelatorioService().gerar_relatorio_inconsistencias(self.map_funcionarios_inconsistentes_por_filial)
 
     def __processar_comprovante_pagamento(self, funcionarios_liquido_folha: List[Funcionario]):
-        ArquivoService().validar_diretorio_retorno_folha_pagamento()
         lista_arquivos_retorno_bancario = \
-            ArquivoService().carregar_retornos_bancario(TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO)
+            self.arquivo_service.carregar_retornos_bancario(TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO)
 
         if len(lista_arquivos_retorno_bancario) > 0:
             logging.info(f'Retornos comprovante pagamento carregados com sucesso! '
@@ -73,12 +72,14 @@ class ProcessamentoService:
         logging.info(f'funcionarios COM comprovante: {self.total_funcionarios_com_comprovante}')
         logging.warning(f'funcionarios SEM comprovante: {self.total_funcionarios_sem_comprovante}')
 
-        gerar_relatorio_comprovante(self.map_funcionarios_com_comprovante_por_filial)
+        relatorio_service = RelatorioService()
+
+        relatorio_service.gerar_relatorio_comprovante(self.map_funcionarios_com_comprovante_por_filial)
 
         map_quantidade_comprovantes_por_filial = self.__transformar_map_funcionarios_com_comprovante_por_filial()
-        gerar_relatorio_resultado_processamento(self.map_total_funcionarios_por_filial,
-                                                map_quantidade_comprovantes_por_filial,
-                                                self.map_funcionarios_sem_comprovante_por_filial)
+        relatorio_service.gerar_relatorio_resultado_processamento(self.map_total_funcionarios_por_filial,
+                                                                  map_quantidade_comprovantes_por_filial,
+                                                                  self.map_funcionarios_sem_comprovante_por_filial)
 
     def __transformar_map_funcionarios_com_comprovante_por_filial(self) -> dict:
         map_quantidade_comprovantes_por_filial = {}

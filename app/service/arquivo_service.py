@@ -19,18 +19,18 @@ class ArquivoService:
         self.diretorio_retorno_previa_pagamento = '../recursos/previa_pagamento/'
         self.diretorio_datasource = '../jasper_report/datasource/'
 
-    def validar_diretorio_liquido_folha(self):
+    def __validar_diretorio_liquido_folha(self):
         lista_arquivos_liquido_folha = os.listdir(self.diretorio_liquido_folha)
         if len(lista_arquivos_liquido_folha) != 1:
             finalizar_programa_error(
                 f'Deve conter UM arquivo do tipo .cvs dentro da pasta {self.diretorio_liquido_folha}')
 
-    def validar_diretorio_retorno_folha_pagamento(self):
+    def __validar_diretorio_retorno_folha_pagamento(self):
         lista_arquivos = os.listdir(self.diretorio_retorno_folpag)
         if len(lista_arquivos) == 0:
             finalizar_programa_error(f'Nao foram encontrados retornos bancarios para processar os comprovantes.')
 
-    def validar_diretorio_retorno_previa_pagamento(self):
+    def __validar_diretorio_retorno_previa_pagamento(self):
         lista_arquivos = os.listdir(self.diretorio_retorno_previa_pagamento)
         if len(lista_arquivos) == 0:
             finalizar_programa_error(f'Nao foram encontrados arquivos para verificar inconsistencias no pagamento.')
@@ -42,6 +42,7 @@ class ArquivoService:
         return arq_liquido_folha
 
     def carregar_lista_funcionarios_liquido_folha(self) -> List[Funcionario]:
+        self.__validar_diretorio_liquido_folha()
         logging.info('Carregando dados do arquivo Liquido Folha.')
         lista_funcionarios_liquido_folha = []
         try:
@@ -69,9 +70,16 @@ class ArquivoService:
         except Exception as error:
             finalizar_programa_error(f"Ocorreu um erro ao tentar carregar arquivo Liquido folha: {error}.")
 
-    def carregar_retornos_bancario(self, tipo_arquivo_processamto: TipoArquivoProcessamento) -> List[ArquivoRetorno]:
+    def carregar_retornos_bancario(self, tipo_arquivo_processamento: TipoArquivoProcessamento) -> List[ArquivoRetorno]:
+
+        if tipo_arquivo_processamento == TipoArquivoProcessamento.PREVIA_PAGAMENTO:
+            self.__validar_diretorio_retorno_previa_pagamento()
+        elif tipo_arquivo_processamento == TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO:
+            self.__validar_diretorio_retorno_folha_pagamento()
+
+        self.tipo_arquivo_processamento = tipo_arquivo_processamento
+
         logging.info('Carregando dados dos arquivo de retorno bancario.')
-        self.tipo_arquivo_processamento = tipo_arquivo_processamto
         try:
             lista_arquivos_retorno = []
             dados_diretorio = self.__buscar_dados_diretorio_pelo_tipo_processamento()
