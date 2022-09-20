@@ -2,7 +2,7 @@ import logging
 import time
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
-from app.service.processamento_service import iniciar_processamento
+from app.service.processamento_service import ProcessamentoService
 from app.dto.enums import OpcaoProcessamento
 from app.service.arquivo_service import excluir_datasources_existentes
 
@@ -54,7 +54,7 @@ def processar_opcao_usuario(opcao_selecionada: int):
 
     data_hora_inicio_execucao = datetime.now()
     logging.info(f'Iniciando processamento comprovantes bancarios: {data_hora_inicio_execucao.strftime("%d/%m/%Y %H:%M:%S")}.')
-    iniciar_processamento(opcao_selecionada)
+    ProcessamentoService().iniciar_processamento(opcao_selecionada)
     data_hora_fim_execucao = datetime.now()
     logging.info(f'Processamento comprovantes finalizado: {data_hora_fim_execucao.strftime("%d/%m/%Y %H:%M:%S")}.')
 
