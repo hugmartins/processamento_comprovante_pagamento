@@ -1,10 +1,10 @@
 import logging
 import time
 from logging.handlers import RotatingFileHandler
+from app.dto.enums import OpcaoProcessamento
 from datetime import datetime
 from app.service.processamento_service import ProcessamentoService
-from app.dto.enums import OpcaoProcessamento
-from app.service.arquivo_service import excluir_datasources_existentes
+from app.service.arquivo_service import ArquivoService
 
 
 def configurar_log():
@@ -27,7 +27,7 @@ def configurar_log():
 
 def executar_configuracoes_iniciais():
     configurar_log()
-    excluir_datasources_existentes()
+    ArquivoService().excluir_datasources_existentes()
 
 
 def iniciar():

@@ -8,8 +8,7 @@ from app.dto.models import Funcionario, ReportComprovante, DetalheReportComprova
     DetalheReportResultadoProcessamento, DetalheReportInconsistencias, ReportInconsistencias
 from app.utils.utils import data_atual_formatada, formatar_cpf_funcionario
 from app.utils.exceptions import finalizar_programa_error
-from app.service.arquivo_service import criar_arquivo_datasource_comprovante_pagamento, \
-    criar_arquivo_datasource_resultado_processamento, criar_arquivo_datasource_inconsistencia_pagamento
+from app.service.arquivo_service import ArquivoService
 
 RESOURCES_DIR = '../jasper_report/datasource/'
 REPORTS_DIR = '../jasper_report/report/'
@@ -38,7 +37,7 @@ def gerar_relatorio_comprovante(map_funcionarios_comprovante: dict):
         data_nome_arquivo = data_atual_formatada()
         nome_arquivo_datasource = f'{codigo_filial}_comprovantes_pagamento_{data_nome_arquivo}'
 
-        criar_arquivo_datasource_comprovante_pagamento(nome_arquivo_datasource, comprovante_report)
+        ArquivoService().criar_arquivo_datasource_comprovante_pagamento(nome_arquivo_datasource, comprovante_report)
         montar_parametros_para_gerar_relatorio_comprovante_pagamento(codigo_filial, data_geracao_arquivo_pagamento,
                                                                      nome_arquivo_datasource)
 
@@ -53,7 +52,7 @@ def gerar_relatorio_resultado_processamento(total_funcionarios_por_filial: dict,
                                              dados_funcionarios_sem_comprovante_por_filial)
 
     nome_datasource_resultado_processamento = f'DATASOURCE_RESULTADO_PROCESSAMENTO_{data_atual_formatada()}'
-    criar_arquivo_datasource_resultado_processamento(nome_datasource_resultado_processamento,
+    ArquivoService().criar_arquivo_datasource_resultado_processamento(nome_datasource_resultado_processamento,
                                                      relatorio_resultado_processamento)
     montar_parametros_para_gerar_relatorio_resultado_processamento(nome_datasource_resultado_processamento)
 
@@ -162,7 +161,7 @@ def gerar_relatorio_inconsistencias(map_funcionarios_por_filial: dict):
         data_nome_arquivo = data_atual_formatada()
         nome_arquivo_datasource = f'{codigo_filial}_inconsistencia_pagamento_{data_nome_arquivo}'
 
-        criar_arquivo_datasource_inconsistencia_pagamento(nome_arquivo_datasource, comprovante_report)
+        ArquivoService().criar_arquivo_datasource_inconsistencia_pagamento(nome_arquivo_datasource, comprovante_report)
         montar_parametros_para_gerar_relatorio_inconsistencias(codigo_filial, nome_arquivo_datasource)
 
 

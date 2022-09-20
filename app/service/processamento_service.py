@@ -4,8 +4,7 @@ from app.utils.exceptions import finalizar_programa_error
 from app.utils.utils import formatar_data_str
 from app.dto.models import Funcionario, ArquivoRetorno, ComprovantePagamentoFuncionario, gerar_novo_funcionario
 from app.dto.enums import TipoArquivoProcessamento
-from app.service.arquivo_service import validar_diretorio_liquido_folha, validar_diretorio_retorno_folha_pagamento, \
-    carregar_lista_funcionarios_liquido_folha, carregar_retornos_bancario, validar_diretorio_retorno_previa_pagamento
+from app.service.arquivo_service import ArquivoService
 from app.service.relatorio_service import gerar_relatorio_comprovante, gerar_relatorio_resultado_processamento, \
     gerar_relatorio_inconsistencias
 from app.dto.constant import INCREMENTE_MAIS_UM
@@ -24,8 +23,8 @@ class ProcessamentoService:
 
     def iniciar_processamento(self, opcao_processamento=int):
         self.opcao_processamento = opcao_processamento
-        validar_diretorio_liquido_folha()
-        funcionarios_liquido_folha = carregar_lista_funcionarios_liquido_folha()
+        ArquivoService().validar_diretorio_liquido_folha()
+        funcionarios_liquido_folha = ArquivoService().carregar_lista_funcionarios_liquido_folha()
 
         if len(funcionarios_liquido_folha) > 0:
             logging.info(f'Liquido Folha com sucesso! Total funcionarios: {len(funcionarios_liquido_folha)}')
@@ -41,8 +40,9 @@ class ProcessamentoService:
             self.__processar_previa_pagamento(funcionarios_liquido_folha)
 
     def __processar_previa_pagamento(self, funcionarios_liquido_folha: List[Funcionario]):
-        validar_diretorio_retorno_previa_pagamento()
-        lista_arquivos_previa_pagamento = carregar_retornos_bancario(TipoArquivoProcessamento.PREVIA_PAGAMENTO)
+        ArquivoService().validar_diretorio_retorno_previa_pagamento()
+        lista_arquivos_previa_pagamento = \
+            ArquivoService().carregar_retornos_bancario(TipoArquivoProcessamento.PREVIA_PAGAMENTO)
 
         if len(lista_arquivos_previa_pagamento) > 0:
             logging.info(f'Retornos previa pagamentos carregados com sucesso! '
@@ -58,8 +58,9 @@ class ProcessamentoService:
             gerar_relatorio_inconsistencias(self.map_funcionarios_inconsistentes_por_filial)
 
     def __processar_comprovante_pagamento(self, funcionarios_liquido_folha: List[Funcionario]):
-        validar_diretorio_retorno_folha_pagamento()
-        lista_arquivos_retorno_bancario = carregar_retornos_bancario(TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO)
+        ArquivoService().validar_diretorio_retorno_folha_pagamento()
+        lista_arquivos_retorno_bancario = \
+            ArquivoService().carregar_retornos_bancario(TipoArquivoProcessamento.COMPROVANTE_PAGAMENTO)
 
         if len(lista_arquivos_retorno_bancario) > 0:
             logging.info(f'Retornos comprovante pagamento carregados com sucesso! '
