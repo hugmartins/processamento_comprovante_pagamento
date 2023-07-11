@@ -47,10 +47,15 @@ mkdir processamento_comprovante_pagamento_build\output\comprovantes\
 mkdir processamento_comprovante_pagamento_build\output\relatorio_inconsistencias\
 mkdir processamento_comprovante_pagamento_build\output\resultado_processamento_comprovantes\
 
+mkdir processamento_comprovante_pagamento_build\recursos\liquido_folha\
+mkdir processamento_comprovante_pagamento_build\recursos\previa_pagamento\
+mkdir processamento_comprovante_pagamento_build\recursos\retorno_comprovante_folpag\
+
 xcopy  ..\README.md processamento_comprovante_pagamento_build
 
 xcopy /s/e ..\jasper_report processamento_comprovante_pagamento_build\jasper_report\
-xcopy /s/e ..\recursos processamento_comprovante_pagamento_build\recursos\
+
+REM xcopy /s/e ..\recursos processamento_comprovante_pagamento_build\recursos\
 REM xcopy /s/e ..\output processamento_comprovante_pagamento_build\output\
 
 xcopy /s/e dto\ processamento_comprovante_pagamento_build\app\dto\

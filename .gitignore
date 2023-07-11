@@ -1,12 +1,8 @@
 .idea/
 venv/
 jasper_report/datasource/
-recursos/liquido_folha/
-recursos/previa_pagamento/
-recursos/retorno_comprovante_folpag/
-output/comprovantes/
-output/relatorio_inconsistencias/
-output/resultado_processamento_comprovantes/
+recursos/*
+output/*
 app/log_processamento.log
 build/
 app/processamento_comprovante_pagamento_build
